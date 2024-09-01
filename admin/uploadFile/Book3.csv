@@ -1,0 +1,11 @@
+batchSession,enrollmentNo,rollNo,Course,Name,fatherName,motherName,Contact,Dob,securityAmount
+2020-2022,ENR001,mca01,MCA,Varsha Singh,Yogesh Singh,Madhu Singh,1234567890,2000-12-01,5000
+2020-2022,ENR002,mba04,MBA,Bhanu,Anil,Aarti,3141341341,2002-11-01,5000
+2021-2023,ENR003,mca10,MCA,Chetan Kumar,Rakesh Kumar,Pooja,2436245635,2000-12-05,5000
+2021-2024,ENR004,bca23,BCA,Amit Sharma,Arvind Sharma,Neeta Sharma,3134514554,2003-10-11,8000
+2022-2025,ENR005,bba74,BBA,Disha,Manoj,Radha,3344514554,2003-10-05,8000
+2022-2024,ENR006,mba06,MBA,Trisha,Pradeep,Suman Singh,3130004554,2004-02-01,5000
+2023-2026,ENR007,bcom07,BCOM,Aman Patel,Sunil Patel,Meena Patel,1114514554,2000-12-01,5000
+2023-2026,ENR008,bba23,BBA,Kiran,Rohan Kumar,Sunita,2324514554,2001-07-01,8000
+2019-2021,ENR009,mca71,MCA,Tanvi,Sunil,Anita,2233445566,2004-07-02,5000
+2019-2022,ENR010,bca55,BCA,Happy Singh,Vijay Singh,Suman Singh,4455667788,2003-09-03,8000

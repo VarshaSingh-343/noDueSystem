@@ -1,0 +1,71 @@
+body {
+    font-family: cursive;
+    background-color: #f4f4f4;
+    margin: 15px 0;
+    padding: 0;
+}
+
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    margin: 0 auto;
+}
+
+.welcome-message {
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    padding: 15px;
+}
+
+main {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.student-detail {
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    padding: 15px 50px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    text-align: left; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+}
+
+.student-detail div {
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 450px; 
+    text-align: center;
+    padding: 10px 20px 10px 30px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+}
+
+.student-detail span{
+    display: inline-block;
+    width: 200px;
+}
+
+.student-detail div:last-child {
+    margin-bottom: 0;
+}
+
+.student-detail strong {
+    display: inline-block;
+    width: 200px;
+    text-align: center;
+}
