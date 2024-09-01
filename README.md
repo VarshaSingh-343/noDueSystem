@@ -53,9 +53,9 @@ The **No Due System** is a web-based application designed to streamline the proc
 
 3. **Create a database in MySQL and import the SQL file:**
 
-    CREATE DATABASE noduesproject;
-    USE noduesproject;
-    SOURCE noduesproject.sql;
+    - CREATE DATABASE noduesproject;
+    - USE noduesproject;
+    - SOURCE noduesproject.sql;
 
 3. **Start your web server and navigate to the application:** 
     Open your browser and go to: http://localhost/noduesproject
@@ -66,12 +66,15 @@ The **No Due System** is a web-based application designed to streamline the proc
 - Html
 - CSS
 - Javascript
+
 **Backend:**
 - PHP 
+
 **Database:**
 - MySQL
+
 **Server:**
 - Apache (via XAMPP)
 
-**Contributing**
+### Contributing
 Contributions are welcome! Please fork the repository and submit a pull request for any improvements or fixes.
