@@ -31,37 +31,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
                 $fileDestination = '../admin/uploadFile/' . $fileNameNew;
 
                 if (move_uploaded_file($fileTmpName, $fileDestination)) {
-                    // Insert into uploadcheque table
-                    $insertChequeQuery = "INSERT INTO uploadcheque (rollNo, filePath) VALUES (?, ?)";
-                    $stmt = $conn->prepare($insertChequeQuery);
-                    $stmt->bind_param("ss", $rollNo, $fileDestination);
+                    // Check if the cheque already exists
+                    $checkChequeQuery = "SELECT * FROM uploadcheque WHERE rollNo = ?";
+                    $stmt = $conn->prepare($checkChequeQuery);
+                    $stmt->bind_param("s", $rollNo);
+                    $stmt->execute();
+                    $chequeResult = $stmt->get_result();
+
+                    if ($chequeResult->num_rows > 0) {
+                        // Update existing cheque record
+                        $updateChequeQuery = "UPDATE uploadcheque SET filePath = ? WHERE rollNo = ?";
+                        $stmt = $conn->prepare($updateChequeQuery);
+                        $stmt->bind_param("ss", $fileDestination, $rollNo);
+                    } else {
+                        // Insert new cheque record
+                        $insertChequeQuery = "INSERT INTO uploadcheque (rollNo, filePath) VALUES (?, ?)";
+                        $stmt = $conn->prepare($insertChequeQuery);
+                        $stmt->bind_param("ss", $rollNo, $fileDestination);
+                    }
+
                     $stmt->execute();
 
-                    // Check if the insertion was successful
+                    // Check if the insertion or update was successful
                     if ($stmt->affected_rows > 0) {
-                        // Insert into refundrequest table
-                        $requestId = 'REQ' . $rollNo;
-                        $requestDate = date('Y-m-d H:i:s');  // Current datetime in IST
-
-                        $insertRefundQuery = "INSERT INTO refundrequest (requestId, rollNo, requestDate) VALUES (?, ?, ?)";
-                        $stmt = $conn->prepare($insertRefundQuery);
-                        $stmt->bind_param("sss", $requestId, $rollNo, $requestDate);
+                        // Insert into refundrequest table if not already present
+                        $checkRequestQuery = "SELECT * FROM refundrequest WHERE rollNo = ?";
+                        $stmt = $conn->prepare($checkRequestQuery);
+                        $stmt->bind_param("s", $rollNo);
                         $stmt->execute();
+                        $requestResult = $stmt->get_result();
 
-                        $approvalDate = null;
-                        $noDueApproval = 'No'; 
+                        if ($requestResult->num_rows == 0) {
+                            $requestId = 'REQ' . $rollNo;
+                            $requestDate = date('Y-m-d H:i:s');  // Current datetime in IST
 
-                        // Insert into nodues table for each department
-                        $deptQuery = "SELECT deptId FROM department";
-                        $deptResult = $conn->query($deptQuery);
+                            $insertRefundQuery = "INSERT INTO refundrequest (requestId, rollNo, requestDate) VALUES (?, ?, ?)";
+                            $stmt = $conn->prepare($insertRefundQuery);
+                            $stmt->bind_param("sss", $requestId, $rollNo, $requestDate);
+                            $stmt->execute();
 
-                        while ($deptRow = $deptResult->fetch_assoc()) {
-                            $deptId = $deptRow['deptId'];
+                            $approvalDate = null;
+                            $noDueApproval = 'No';
 
-                            $noDuesQuery = "INSERT INTO nodues (requestId, deptId, noDueApproval, noDueComment, approvalDate) VALUES (?, ?, ?, NULL, ?)";
-                            $noDuesStmt = $conn->prepare($noDuesQuery);
-                            $noDuesStmt->bind_param("ssss", $requestId, $deptId, $noDueApproval, $approvalDate);
-                            $noDuesStmt->execute();
+                            // Insert into nodues table for each department
+                            $deptQuery = "SELECT deptId FROM department";
+                            $deptResult = $conn->query($deptQuery);
+
+                            while ($deptRow = $deptResult->fetch_assoc()) {
+                                $deptId = $deptRow['deptId'];
+
+                                $noDuesQuery = "INSERT INTO nodues (requestId, deptId, noDueApproval, noDueComment, approvalDate) VALUES (?, ?, ?, NULL, ?)";
+                                $noDuesStmt = $conn->prepare($noDuesQuery);
+                                $noDuesStmt->bind_param("ssss", $requestId, $deptId, $noDueApproval, $approvalDate);
+                                $noDuesStmt->execute();
+                            }
                         }
 
                         // Set success message and redirect
@@ -69,23 +92,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
                         header("Location: noDuesRequest.php");
                         exit();
                     } else {
-                        $_SESSION['error_message'] = "Error saving file information to the database.";
+                        $_SESSION['error_message'] = "No changes were made to the file information.";
                     }
                 } else {
                     $_SESSION['error_message'] = "Error uploading the file.";
                 }
             } else {
-                $_SESSION['error_message'] = "File size exceeds 2MB.";
+                $_SESSION['error_message'] = "File size exceeds 2MB limit.";
             }
         } else {
             $_SESSION['error_message'] = "Error uploading the file.";
         }
     } else {
-        $_SESSION['error_message'] = "Invalid file type. Only PDF files are allowed.";
+        $_SESSION['error_message'] = "Invalid file type. Only PDF is allowed.";
     }
-
-    // If any error occurs, redirect back with the error message
-    header("Location: noDuesRequest.php");
-    exit();
+} else {
+    $_SESSION['error_message'] = "No file was uploaded.";
 }
-?>
+
+header("Location: noDuesRequest.php");
+exit();

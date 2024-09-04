@@ -9,6 +9,8 @@ if (!isset($_SESSION['rollno'])) {
 
 $rollNo = $_SESSION['rollno'];
 $requestSubmitted = false;
+$refundStatus = '';
+$uploadedCheque = '';
 
 // Check if the student has already submitted a request
 $query = "SELECT * FROM refundrequest WHERE rollNo = ?";
@@ -19,8 +21,23 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $requestSubmitted = true;
+    $row = $result->fetch_assoc();
+    $refundStatus = $row['refundStatus'];
 }
 
+// Check if the student has uploaded a cheque
+$chequeQuery = "SELECT filePath FROM uploadcheque WHERE rollNo = ?";
+$chequeStmt = $conn->prepare($chequeQuery);
+$chequeStmt->bind_param("s", $rollNo);
+$chequeStmt->execute();
+$chequeResult = $chequeStmt->get_result();
+
+if ($chequeResult->num_rows > 0) {
+    $chequeRow = $chequeResult->fetch_assoc();
+    $uploadedCheque = $chequeRow['filePath'];
+}
+
+$chequeStmt->close();
 $stmt->close();
 ?>
 
@@ -62,12 +79,18 @@ $stmt->close();
 
             <?php if ($requestSubmitted): ?>
                 <div class="message">You have already submitted a No Dues Request.</div>
-                <form action="trackStatus.php" method="get">
-                    <button type="submit">Track Refund Status</button>
-                </form>
-            <?php else: ?>
+            <?php endif; ?>
+
+            <?php if ($uploadedCheque): ?>
+                <div class="uploaded-cheque">
+                    <h3>Your Uploaded Cheque:</h3>
+                    <a href="<?php echo $uploadedCheque; ?>" target="_blank">View Uploaded Cheque</a>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($refundStatus !== 'Yes'): ?>
                 <form action="processRequest.php" method="post" enctype="multipart/form-data">
-                    <h2>Upload Cancelled Cheque</h2>
+                    <h2>Upload/Replace Cancelled Cheque</h2>
                     <label for="file">Select the canceled cheque to upload:</label>
                     <input type="file" name="file" id="file" accept="application/pdf" required>
 
@@ -76,7 +99,16 @@ $stmt->close();
                         *Max size: 2MB
                     </div>
 
-                    <button type="submit">Submit Request</button>
+                    <button id = "updatecheque" type="submit">Update Cheque</button>
+                </form>
+            <?php else: ?>
+                <div class="message">Your Refund has already been processed. You cannot change the uploaded cheque.</div>
+            <?php endif; ?>
+
+            <?php if ($requestSubmitted): ?>
+                <!-- <div class="message">You have already submitted a No Dues Request.</div> -->
+                <form action="trackStatus.php" method="get">
+                    <button type="submit">Track Refund Status</button>
                 </form>
             <?php endif; ?>
         </main>

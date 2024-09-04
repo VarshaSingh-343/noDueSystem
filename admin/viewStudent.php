@@ -1,53 +1,130 @@
 <?php
 session_start();
 include '../connect.php';
+
 if (!isset($_SESSION['username'])) {
     header("Location: adminLogin.php");
     exit();
 }
 
+// Fetch distinct values for course and batch
 $courseQuery = "SELECT DISTINCT Course FROM student";
 $courseResult = $conn->query($courseQuery);
-$selectedCourse = '';
 
 $batchQuery = "SELECT DISTINCT batchSession FROM student";
 $batchResult = $conn->query($batchQuery);
-$selectedBatch = '';
 
-$conditions = [];
-$params = [];
+// Initialize query parts
+$studentConditions = [];
+$studentParams = [];
+$studentParamTypes = '';
+
+$refundConditions = [];
+$refundParams = [];
+$refundParamTypes = '';
+
+$showStudentTable = true;  // Default to show the student table
+$showRefundTable = false;
+$studentResult = null;
 
 if (isset($_POST['filter'])) {
+    // Process student filters
     if (!empty($_POST['course'])) {
         $selectedCourse = $_POST['course'];
-        $conditions[] = "student.Course = ?";
-        $params[] = $selectedCourse;
+        $studentConditions[] = "Course = ?";
+        $studentParams[] = $selectedCourse;
+        $studentParamTypes .= 's';
+        $showRefundTable = false;  // Initially set to false; will only be true if refund filters are used
     }
-    
+
     if (!empty($_POST['batchSession'])) {
         $selectedBatch = $_POST['batchSession'];
-        $conditions[] = "student.batchSession = ?";
-        $params[] = $selectedBatch;
+        $studentConditions[] = "batchSession = ?";
+        $studentParams[] = $selectedBatch;
+        $studentParamTypes .= 's';
+        $showRefundTable = false;  // Initially set to false; will only be true if refund filters are used
+    }
+
+    // Process refund filters
+    if (!empty($_POST['refundRequest']) || !empty($_POST['refundStatus'])) {
+        $showRefundTable = true;  // Set to true because refund filters are being used
+        $showStudentTable = false;  // Do not show student table when refund filters are applied
+
+        if (!empty($_POST['refundRequest'])) {
+            $refundRequest = $_POST['refundRequest'];
+            if ($refundRequest == 'Requested') {
+                $refundConditions[] = "refundrequest.rollNo IS NOT NULL";
+            } elseif ($refundRequest == 'Non Requested') {
+                $refundConditions[] = "refundrequest.rollNo IS NULL";
+            }
+        }
+
+        if (!empty($_POST['refundStatus'])) {
+            $refundStatus = $_POST['refundStatus'];
+            if ($refundStatus == 'Refunded') {
+                $refundConditions[] = "refundrequest.refundStatus = 'Yes'";
+            } elseif ($refundStatus == 'Non Refunded') {
+                $refundConditions[] = "refundrequest.refundStatus = 'No'";
+            }
+        }
+    }
+
+    if ($showRefundTable) {
+        // Build the refund query
+        $refundQuery = "
+            SELECT student.rollNo, student.Name, student.Course, 
+                   refundrequest.requestId, refundrequest.requestDate, 
+                   refundrequest.refundDate, refundrequest.refundDescription, 
+                   refundrequest.refundStatus
+            FROM student
+            LEFT JOIN refundrequest ON student.rollNo = refundrequest.rollNo
+            WHERE 1=1";
+
+        // Add student filters if any
+        if (!empty($studentConditions)) {
+            $refundQuery .= " AND " . implode(" AND ", $studentConditions);
+        }
+
+        // Add refund filters if any
+        if (!empty($refundConditions)) {
+            $refundQuery .= " AND " . implode(" AND ", $refundConditions);
+        }
+
+        // Prepare and execute the refund query
+        $refundStmt = $conn->prepare($refundQuery);
+        if ($refundStmt) {
+            if (!empty($studentParams)) {
+                $refundStmt->bind_param($studentParamTypes, ...$studentParams);
+            }
+            $refundStmt->execute();
+            $refundResult = $refundStmt->get_result();
+        } else {
+            die("Failed to prepare refund query: " . $conn->error);
+        }
     }
 }
 
-$query = "SELECT * FROM student";
-
-if (!empty($conditions)) {
-    $query .= " WHERE " . implode(" AND ", $conditions);
+// Build the default student query
+$studentQuery = "SELECT * FROM student";
+if (!empty($studentConditions)) {
+    $studentQuery .= " WHERE " . implode(" AND ", $studentConditions);
 }
 
-$stmt = $conn->prepare($query);
-
-if (!empty($params)) {
-    $paramTypes = str_repeat("s", count($params));
-    $stmt->bind_param($paramTypes, ...$params);
+// Prepare and execute the student query only if refund table is not shown
+if (!$showRefundTable) {
+    $studentStmt = $conn->prepare($studentQuery);
+    if ($studentStmt) {
+        if (!empty($studentParams)) {
+            $studentStmt->bind_param($studentParamTypes, ...$studentParams);
+        }
+        $studentStmt->execute();
+        $studentResult = $studentStmt->get_result();
+    } else {
+        die("Failed to prepare student query: " . $conn->error);
+    }
 }
-
-$stmt->execute();
-$studentResult = $stmt->get_result();
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +133,6 @@ $studentResult = $stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Student Data</title>
     <link rel="stylesheet" href="adminDashboard.css">
-    
 </head>
 <body>
     <div class="container">
@@ -77,33 +153,49 @@ $studentResult = $stmt->get_result();
 
         <div id="filterSection">
             <form method="POST" action="">
-                <label for="course">Filter by Course:</label>
+                <label for="course">Filter Course:</label>
                 <select name="course" id="course">
                     <option value="">Select Course</option>
                     <?php while ($courseRow = $courseResult->fetch_assoc()): ?>
                         <option value="<?php echo htmlspecialchars($courseRow['Course']); ?>"
-                            <?php if ($selectedCourse == $courseRow['Course']) echo 'selected'; ?>>
+                            <?php if (isset($_POST['course']) && $_POST['course'] == $courseRow['Course']) echo 'selected'; ?>>
                             <?php echo htmlspecialchars($courseRow['Course']); ?>
                         </option>
                     <?php endwhile; ?>
                 </select>
 
-                <label for="batchSession">Filter by Batch:</label>
+                <label for="batchSession">Filter Batch:</label>
                 <select name="batchSession" id="batchSession">
                     <option value="">Select Batch</option>
                     <?php while ($batchRow = $batchResult->fetch_assoc()): ?>
                         <option value="<?php echo htmlspecialchars($batchRow['batchSession']); ?>"
-                            <?php if ($selectedBatch == $batchRow['batchSession']) echo 'selected'; ?>>
+                            <?php if (isset($_POST['batchSession']) && $_POST['batchSession'] == $batchRow['batchSession']) echo 'selected'; ?>>
                             <?php echo htmlspecialchars($batchRow['batchSession']); ?>
                         </option>
                     <?php endwhile; ?>
                 </select>
 
+                <br>
+
+                <!-- Add Refund Request Filter -->
+                <label for="refundRequest">Refund Request:</label>
+                <select name="refundRequest" id="refundRequest">
+                    <option value="">Select Status</option>
+                    <option value="Requested" <?php if (isset($_POST['refundRequest']) && $_POST['refundRequest'] == 'Requested') echo 'selected'; ?>>Requested</option>
+                    <option value="Non Requested" <?php if (isset($_POST['refundRequest']) && $_POST['refundRequest'] == 'Non Requested') echo 'selected'; ?>>Non Requested</option>
+                </select>
+
+                <!-- Add Refund Status Filter -->
+                <label for="refundStatus">Refund Status:</label>
+                <select name="refundStatus" id="refundStatus">
+                    <option value="">Select Status</option>
+                    <option value="Refunded" <?php if (isset($_POST['refundStatus']) && $_POST['refundStatus'] == 'Refunded') echo 'selected'; ?>>Refunded</option>
+                    <option value="Non Refunded" <?php if (isset($_POST['refundStatus']) && $_POST['refundStatus'] == 'Non Refunded') echo 'selected'; ?>>Non Refunded</option>
+                </select>
+
                 <button type="submit" id="filter" name="filter">Filter</button>
             </form>
         </div>
-
-        <h2>Student Details</h2>
 
         <?php include 'importData.php'; ?>
 
@@ -114,7 +206,36 @@ $studentResult = $stmt->get_result();
             </script>
         <?php endif; ?>
 
-        <?php if ($studentResult->num_rows > 0): ?>
+        <?php if ($showRefundTable && !empty($refundResult)): ?>
+            <!-- Display refund details table when refund filters or student filters with refund filters are applied -->
+            <h2>Refund Details</h2>
+            <table>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Course</th>
+                    <th>Request ID</th>
+                    <th>Request Date</th>
+                    <th>Refund Date</th>
+                    <th>Refund Description</th>
+                    <th>Refund Status</th>
+                </tr>
+                <?php while ($row = $refundResult->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['rollNo']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Course']); ?></td>
+                        <td><?php echo htmlspecialchars($row['requestId']); ?></td>
+                        <td><?php echo htmlspecialchars($row['requestDate']); ?></td>
+                        <td><?php echo htmlspecialchars($row['refundDate']); ?></td>
+                        <td><?php echo htmlspecialchars($row['refundDescription']); ?></td>
+                        <td><?php echo htmlspecialchars($row['refundStatus']); ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </table>
+        <?php elseif ($showStudentTable && !empty($studentResult)): ?>
+            <!-- Display student details table when only student filters are applied -->
+            <h2>Student Details</h2>
             <table>
                 <tr>
                     <th>Batch Session</th>
@@ -124,8 +245,8 @@ $studentResult = $stmt->get_result();
                     <th>Name</th>
                     <th>Father's Name</th>
                     <th>Mother's Name</th>
-                    <th>Contact</th>
-                    <th>Date of Birth</th>
+                    <th>Contact No</th>
+                    <th>Date Of Birth</th>
                     <th>Security Amount</th>
                 </tr>
                 <?php while($row = $studentResult->fetch_assoc()): ?>
@@ -144,9 +265,8 @@ $studentResult = $stmt->get_result();
                 <?php endwhile; ?>
             </table>
         <?php else: ?>
-            <p>No student records found.</p>
+            <p>No data found for the selected filters.</p>
         <?php endif; ?>
-
     </div>
 </body>
 </html>

@@ -15,9 +15,15 @@ $batchQuery = "SELECT DISTINCT batchSession FROM student";
 $batchResult = $conn->query($batchQuery);
 $selectedBatch = '';
 
+$selectedRefundStatus = '';
+$selectedStartDate = '';
+$selectedEndDate = '';
+$selectedDepartmentDues = '';
+
 $conditions = [];
 $params = [];
 
+// Handle form submission
 if (isset($_POST['filter'])) {
     if (!empty($_POST['course'])) {
         $selectedCourse = $_POST['course'];
@@ -30,16 +36,51 @@ if (isset($_POST['filter'])) {
         $conditions[] = "student.batchSession = ?";
         $params[] = $selectedBatch;
     }
+    
+    if (!empty($_POST['refundStatus'])) {
+        $selectedRefundStatus = $_POST['refundStatus'];
+        $conditions[] = "refundrequest.refundStatus = ?";
+        $params[] = $selectedRefundStatus;
+    }
+
+    if (!empty($_POST['startDate'])) {
+        $selectedStartDate = $_POST['startDate'];
+        $conditions[] = "refundrequest.requestDate >= ?";
+        $params[] = $selectedStartDate;
+    }
+    
+    if (!empty($_POST['endDate'])) {
+        $selectedEndDate = $_POST['endDate'];
+        $conditions[] = "refundrequest.requestDate <= ?";
+        $params[] = $selectedEndDate;
+    }
+
+    if (!empty($_POST['departmentDues'])) {
+        $selectedDepartmentDues = $_POST['departmentDues'];
+        if ($selectedDepartmentDues == 'Cleared') {
+            $conditions[] = "nodues.noDueApproval = 'Yes'";
+        } elseif ($selectedDepartmentDues == 'Not Cleared') {
+            $conditions[] = "nodues.noDueApproval = 'No'";
+        }
+    }
 }
 
+// Base query with refund request and student data
 $query = "SELECT refundrequest.rollNo, refundrequest.requestDate, refundrequest.refundStatus, 
-                 refundrequest.refundDate, refundrequest.refundDescription
+                 refundrequest.refundDate, refundrequest.refundDescription,
+                 nodues.deptId, nodues.noDueApproval, nodues.noDueComment, department.deptName,
+                 uploadcheque.filePath
           FROM refundrequest 
-          JOIN student ON refundrequest.rollNo = student.rollNo";
+          JOIN student ON refundrequest.rollNo = student.rollNo
+          LEFT JOIN nodues ON nodues.requestId = refundrequest.requestId
+          LEFT JOIN department ON nodues.deptId = department.deptId
+          LEFT JOIN uploadcheque ON uploadcheque.rollNo = student.rollNo";
 
 if (!empty($conditions)) {
     $query .= " WHERE " . implode(" AND ", $conditions);
 }
+
+$query .= " ORDER BY refundrequest.rollNo, department.deptId";
 
 $stmt = $conn->prepare($query);
 
@@ -50,7 +91,28 @@ if (!empty($params)) {
 
 $stmt->execute();
 $result = $stmt->get_result();
+
+$refundData = [];
+while ($row = $result->fetch_assoc()) {
+    $rollNo = $row['rollNo'];
+    if (!isset($refundData[$rollNo])) {
+        $refundData[$rollNo] = [
+            'rollNo' => $row['rollNo'],
+            'requestDate' => $row['requestDate'],
+            'refundStatus' => $row['refundStatus'],
+            'refundDate' => $row['refundDate'],
+            'refundDescription' => $row['refundDescription'],
+            'departments' => [],
+            'filePath' => $row['filePath']
+        ];
+    }
+    $refundData[$rollNo]['departments'][$row['deptName']] = [
+        'noDueApproval' => $row['noDueApproval'],
+        'noDueComment' => $row['noDueComment']
+    ];
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -60,7 +122,24 @@ $result = $stmt->get_result();
     <title>View Refund Requests</title>
     <link rel="stylesheet" href="adminDashboard.css">
     <style>
-        
+        .filter-group{
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        table{
+            width: 100%;
+        }
+        td {
+            vertical-align: top;
+        }
+        .dept-status {
+            font-weight: bold;
+        }
+        .dept-comment {
+            margin-top: 5px;
+            font-size: smaller;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -100,33 +179,80 @@ $result = $stmt->get_result();
                     <?php endwhile; ?>
                 </select>
 
+                <label for="refundStatus">Filter by Refund Status:</label>
+                <select name="refundStatus" id="refundStatus">
+                    <option value="">Select Status</option>
+                    <option value="Yes" <?php if ($selectedRefundStatus == 'Yes') echo 'selected'; ?>>Refunded</option>
+                    <option value="No" <?php if ($selectedRefundStatus == 'No') echo 'selected'; ?>>Non Refunded</option>
+                </select>
+
+                <div class="filter-group">
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" name="startDate" id="startDate" value="<?php echo htmlspecialchars($selectedStartDate); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" name="endDate" id="endDate" value="<?php echo htmlspecialchars($selectedEndDate); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="departmentDues">Filter by Department Dues:</label>
+                    <select name="departmentDues" id="departmentDues">
+                        <option value="">Select Dues Status</option>
+                        <option value="Cleared" <?php if ($selectedDepartmentDues == 'Cleared') echo 'selected'; ?>>Dues Cleared</option>
+                        <option value="Not Cleared" <?php if ($selectedDepartmentDues == 'Not Cleared') echo 'selected'; ?>>Dues Not Cleared</option>
+                    </select>
+                </div>
+
                 <button type="submit" id="filter" name="filter">Filter</button>
             </form>
         </div>
 
         <div id="requestsSection">
             <h3>Details of Students Requesting for Security Money</h3>
-            <?php if ($result->num_rows > 0): ?>
+            <?php if (!empty($refundData)): ?>
                 <table>
                     <thead>
                         <tr>
                             <th>Roll No</th>
                             <th>Request Date</th>
+                            <?php 
+                            if ($departmentResult = $conn->query("SELECT deptName FROM department")) {
+                                while ($deptRow = $departmentResult->fetch_assoc()) {
+                                    echo "<th>{$deptRow['deptName']} Status & Comment</th>";
+                                }
+                            }
+                            ?>
                             <th>Refund Status</th>
                             <th>Refund Date</th>
                             <th>Refund Description</th>
+                            <th>Cheque</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+                        <?php foreach ($refundData as $rollNo => $data): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($row['rollNo']); ?></td>
-                                <td><?php echo htmlspecialchars($row['requestDate']); ?></td>
-                                <td><?php echo htmlspecialchars($row['refundStatus']); ?></td>
-                                <td><?php echo htmlspecialchars($row['refundDate']); ?></td>
-                                <td><?php echo htmlspecialchars($row['refundDescription']); ?></td>
+                                <td><?php echo htmlspecialchars($data['rollNo']); ?></td>
+                                <td><?php echo htmlspecialchars($data['requestDate']); ?></td>
+                                <?php foreach ($data['departments'] as $deptName => $deptData): ?>
+                                    <td>
+                                        <div class="dept-status"><?php echo $deptData['noDueApproval'] == 'Yes' ? 'Cleared' : 'Not Cleared'; ?></div>
+                                        <div class="dept-comment"><?php echo htmlspecialchars($deptData['noDueComment']); ?></div>
+                                    </td>
+                                <?php endforeach; ?>
+                                <td><?php echo htmlspecialchars($data['refundStatus'] == 'Yes' ? 'Refunded' : 'Non Refunded'); ?></td>
+                                <td><?php echo htmlspecialchars($data['refundDate']); ?></td>
+                                <td><?php echo htmlspecialchars($data['refundDescription']); ?></td>
+                                <td>
+                                    <?php if (!empty($data['filePath'])): ?>
+                                        <a href="<?php echo htmlspecialchars($data['filePath']); ?>" class="cheque-link" target="_blank">View Cheque</a>
+                                    <?php else: ?>
+                                        Not Uploaded
+                                    <?php endif; ?>
+                                </td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             <?php else: ?>

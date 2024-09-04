@@ -37,47 +37,15 @@ $stmt->bind_param("s", $requestId);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Refund Status</title>
-    <link rel="stylesheet" href="studentDashboard.css">
+    <link rel="stylesheet" href="noDuesRequest.css">
     <style>
-        h2{
-            text-align: center;
-        }
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
-
-        th {
-            background-color: #4A148C;
-            color: white;
-        }
-
-        .refund-info {
-            margin-top : 10px;
-            background-color: #f9f9f9;
-            padding: 5px 20px 10px 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 60%;
-        }
-
-        .refund-info p {
-            margin: 10px 0;
-        }
+        /* Your custom styles */
     </style>
 </head>
 <body>
@@ -124,7 +92,11 @@ $result = $stmt->get_result();
             <?php if (!empty($refundStatus)): ?>
                 <div class="refund-info">
                     <h2>Refund Details</h2>
-                    <p><strong>Refund Status:</strong> <?php echo htmlspecialchars($refundStatus); ?></p>
+                    <p><strong>Refund Status:</strong> 
+                        <?php 
+                        echo htmlspecialchars($refundStatus === 'Yes' ? 'Initiated' : $refundStatus); 
+                        ?>
+                    </p>
                     <p><strong>Refund Date:</strong> <?php echo htmlspecialchars($refundDate); ?></p>
                     <p><strong>Refund Description:</strong> <?php echo htmlspecialchars($refundDescription); ?></p>
                 </div>
@@ -133,8 +105,3 @@ $result = $stmt->get_result();
     </div>
 </body>
 </html>
-
-<?php
-$stmt->close();
-$conn->close();
-?>

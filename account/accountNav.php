@@ -1,5 +1,5 @@
 <style>
-        header {
+    header {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -61,13 +61,9 @@
 
     <nav>
         <ul>
-            <li><a href="adminDashboard.php" class="nav-link">Dashboard</a></li>
+            <li><a class="nav-link" href="accountDashboard.php">Dashboard</a></li>
             <li>|</li>
-            <li><a href="viewStudent.php" class="nav-link">Students Data</a></li>
-            <li>|</li>
-            <li><a href="departmentManagement.php" class="nav-link">Department Details</a></li>
-            <li>|</li>
-            <li><a href="adminLogout.php" class="nav-link">Logout</a></li>
+            <li><a class="nav-link" href="accountLogout.php">Logout</a></li>
         </ul>
     </nav>    
 
