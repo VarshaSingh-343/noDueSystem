@@ -58,9 +58,15 @@ if (isset($_POST['filter'])) {
     if (!empty($_POST['departmentDues'])) {
         $selectedDepartmentDues = $_POST['departmentDues'];
         if ($selectedDepartmentDues == 'Cleared') {
-            $conditions[] = "nodues.noDueApproval = 'Yes'";
+            // All departments must have cleared dues (i.e., noDueApproval = 'Yes')
+            $conditions[] = "NOT EXISTS (
+                SELECT 1 FROM nodues n WHERE n.requestId = refundrequest.requestId AND n.noDueApproval = 'No'
+            )";
         } elseif ($selectedDepartmentDues == 'Not Cleared') {
-            $conditions[] = "nodues.noDueApproval = 'No'";
+            // At least one department must not have cleared dues (i.e., noDueApproval = 'No')
+            $conditions[] = "EXISTS (
+                SELECT 1 FROM nodues n WHERE n.requestId = refundrequest.requestId AND n.noDueApproval = 'No'
+            )";
         }
     }
 }
@@ -237,8 +243,12 @@ while ($row = $result->fetch_assoc()) {
                                 <td><?php echo htmlspecialchars($data['requestDate']); ?></td>
                                 <?php foreach ($data['departments'] as $deptName => $deptData): ?>
                                     <td>
-                                        <div class="dept-status"><?php echo $deptData['noDueApproval'] == 'Yes' ? 'Cleared' : 'Not Cleared'; ?></div>
-                                        <div class="dept-comment"><?php echo htmlspecialchars($deptData['noDueComment']); ?></div>
+                                        <div class="dept-status">
+                                            <?php echo $deptData['noDueApproval'] == 'Yes' ? 'Cleared' : 'Not Cleared'; ?>
+                                        </div>
+                                        <div class="dept-comment">
+                                            <?php echo empty($deptData['noDueComment']) || $deptData['noDueComment'] === 'NULL' ? 'No comments' : htmlspecialchars($deptData['noDueComment']); ?>
+                                        </div>
                                     </td>
                                 <?php endforeach; ?>
                                 <td><?php echo htmlspecialchars($data['refundStatus'] == 'Yes' ? 'Refunded' : 'Non Refunded'); ?></td>

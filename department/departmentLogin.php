@@ -15,24 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows === 1) {
         $_SESSION['deptId'] = $deptId;
 
-        switch ($deptId) {
-            case 'D01':
-                header("Location: FeeDashboard.php");
-                exit();
-            case 'D02':
-                header("Location: LibraryDashboard.php");
-                exit();
-            case 'D03':
-                header("Location: ComputerCenterDashboard.php");
-                exit();
-            case 'D04':
-                header("Location: OfficeDashboard.php");
-                exit();
-            default:
-                $_SESSION['message'] = 'Invalid Department ID.';
-                header("Location: departmentLogin.php");
-                exit();
-        }
+        // Redirect based on deptId
+        header("Location: departmentDashboard.php");
+        exit();
     } else {
         $_SESSION['message'] = 'Invalid Department ID or Password.';
     }

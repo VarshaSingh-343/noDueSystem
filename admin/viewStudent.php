@@ -128,12 +128,19 @@ if (!$showRefundTable) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Student Data</title>
     <link rel="stylesheet" href="adminDashboard.css">
+    <style>
+        p{
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -206,8 +213,7 @@ if (!$showRefundTable) {
             </script>
         <?php endif; ?>
 
-        <?php if ($showRefundTable && !empty($refundResult)): ?>
-            <!-- Display refund details table when refund filters or student filters with refund filters are applied -->
+        <?php if ($showRefundTable && $refundResult->num_rows > 0): ?>
             <h2>Refund Details</h2>
             <table>
                 <tr>
@@ -233,8 +239,7 @@ if (!$showRefundTable) {
                     </tr>
                 <?php endwhile; ?>
             </table>
-        <?php elseif ($showStudentTable && !empty($studentResult)): ?>
-            <!-- Display student details table when only student filters are applied -->
+        <?php elseif ($showStudentTable && $studentResult->num_rows > 0): ?>
             <h2>Student Details</h2>
             <table>
                 <tr>
@@ -249,24 +254,26 @@ if (!$showRefundTable) {
                     <th>Date Of Birth</th>
                     <th>Security Amount</th>
                 </tr>
-                <?php while($row = $studentResult->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['batchSession']); ?></td>
-                    <td><?php echo htmlspecialchars($row['enrollmentNo']); ?></td>
-                    <td><?php echo htmlspecialchars($row['rollNo']); ?></td>
-                    <td><?php echo htmlspecialchars($row['Course']); ?></td>
-                    <td><?php echo htmlspecialchars($row['Name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['fatherName']); ?></td>
-                    <td><?php echo htmlspecialchars($row['motherName']); ?></td>
-                    <td><?php echo htmlspecialchars($row['Contact']); ?></td>
-                    <td><?php echo htmlspecialchars($row['Dob']); ?></td>
-                    <td><?php echo htmlspecialchars($row['securityAmount']); ?></td>
-                </tr>
+                <?php while ($row = $studentResult->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['batchSession']); ?></td>
+                        <td><?php echo htmlspecialchars($row['enrollmentNo']); ?></td>
+                        <td><?php echo htmlspecialchars($row['rollNo']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Course']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['fatherName']); ?></td>
+                        <td><?php echo htmlspecialchars($row['motherName']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Contact']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Dob']); ?></td>
+                        <td><?php echo htmlspecialchars($row['securityAmount']); ?></td>
+                    </tr>
                 <?php endwhile; ?>
             </table>
         <?php else: ?>
             <p>No data found for the selected filters.</p>
         <?php endif; ?>
+
     </div>
 </body>
+
 </html>

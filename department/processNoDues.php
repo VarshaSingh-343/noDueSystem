@@ -13,7 +13,7 @@ $deptId = $_SESSION['deptId'];
 
 if (!isset($_POST['requestId']) || !isset($_POST['noDueApproval']) || !isset($_POST['noDueComment'])) {
     $_SESSION['error_message'] = "Missing data for the no dues process.";
-    redirectToDashboard($deptId);
+    redirectToViewRefundRequests($deptId);
     exit();
 }
 
@@ -84,30 +84,11 @@ try {
     }
     $conn->close();
 }
-
-// Redirect based on the department ID
-redirectToDashboard($deptId);
+redirectToViewRefundRequests($deptId);
 exit();
 
-// Function to redirect to the appropriate dashboard
-function redirectToDashboard($deptId) {
-    switch ($deptId) {
-        case 'D01':
-            header("Location: FeeDashboard.php");
-            break;
-        case 'D02':
-            header("Location: LibraryDashboard.php");
-            break;
-        case 'D03':
-            header("Location: ComputerCenterDashboard.php");
-            break;
-        case 'D04':
-            header("Location: OfficeDashboard.php");
-            break;
-        default:
-            header("Location: departmentLogin.php");
-            break;
-    }
+function redirectToViewRefundRequests($deptId) {
+    header("Location: viewRefundRequests.php?deptId=" . urlencode($deptId));
     exit();
 }
 ?>

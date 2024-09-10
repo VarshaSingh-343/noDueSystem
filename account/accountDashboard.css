@@ -222,7 +222,7 @@ h3{
 }
 
 #filterSection button {
-    margin-left: 10px; 
+    margin-left: 25px; 
     padding: 5px 10px;  
     background-color: #8a60eb;
     border: none;
@@ -230,5 +230,25 @@ h3{
 
 #filterSection button:hover {
     background-color: #4a2996;
+}
+
+.filter-group{
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+table{
+    width: 100%;
+}
+td {
+    vertical-align: top;
+}
+.dept-status {
+    font-weight: bold;
+}
+.dept-comment {
+    margin-top: 5px;
+    font-size: smaller;
+    color: #555;
 }
 

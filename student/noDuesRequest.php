@@ -99,7 +99,7 @@ $stmt->close();
                         *Max size: 2MB
                     </div>
 
-                    <button id = "updatecheque" type="submit">Update Cheque</button>
+                    <button id = "updatecheque" type="submit">Upload Cheque</button>
                 </form>
             <?php else: ?>
                 <div class="message">Your Refund has already been processed. You cannot change the uploaded cheque.</div>
