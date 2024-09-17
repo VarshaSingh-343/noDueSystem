@@ -86,8 +86,9 @@ textarea {
     flex-direction: column;
     gap: 20px;
 }
+
 .toggle-btn {
-    padding: 20px 20px;
+    padding: 18px 20px;
     background-color: #4A148C;
     color: white;
     border: none;
@@ -108,6 +109,10 @@ textarea {
     padding: 5px;
     border: none;
     font-weight: bold;
+}
+
+#greenYes:hover{
+    scale:1.1;
 }
 
 #redNo {
@@ -166,7 +171,7 @@ textarea {
     cursor: pointer;
 }
 
-#submit {
+#submitModal {
     background-color: green;
     color: white;
     border: none;
@@ -175,9 +180,10 @@ textarea {
     font-weight: bold;
 }
 
-#submit:hover {
-    background-color: #043406;
+#submitModal:hover {
+    background-color: #1a5f1d;
     color: white;
+    scale: 1.1;
 }
 
 h3{
@@ -187,12 +193,12 @@ h3{
 #filterSection {
     display: flex;
     flex-direction: row;
-    background-color: #f5f5f5;
+    background-color: #eae7eb;
     padding: 5px 15px;
     text-align: center;
     justify-content: left;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px #d4d2d4;
     align-items: center;
     margin-top: 20px;
 }
@@ -223,18 +229,22 @@ h3{
 
 #filterSection button {
     margin-left: 25px; 
-    padding: 5px 10px;  
+    padding: 7px 12px;  
     background-color: #8a60eb;
     border: none;
+    font-weight: bold;
+    border-radius: 4px;
+    font-size: 15px;
 }
 
 #filterSection button:hover {
     background-color: #4a2996;
+    scale: 1.1;
+    color: white;
 }
 
 .filter-group{
-    margin-top: 20px;
-    margin-bottom: 15px;
+    margin: 8px ;
 }
 
 table{
@@ -250,5 +260,9 @@ td {
     margin-top: 5px;
     font-size: smaller;
     color: #555;
+}
+
+#noRecord{
+    text-align: center;
 }
 

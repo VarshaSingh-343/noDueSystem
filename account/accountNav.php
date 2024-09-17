@@ -3,20 +3,15 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 15px;
     }
 
     .header-item {
         text-align: center;
     }
 
-    .welcome-message {
+    .h2 {
         color: #333;
-        font-weight: bold;
-    }
-
-    .welcome-message h2{
-        padding: 2px;
+        /* font-weight: bold; */
     }
 
     nav {
@@ -28,7 +23,7 @@
         justify-content: center;
         background-color: #333;
         font-size: 16px;
-        height: 50px;
+        height: 45px;
     }
 
     nav ul {
@@ -43,14 +38,17 @@
         background-color: #333;
         color: white;
         border: none;
-        padding: 10px;
+        padding: 7px 10px;
         cursor: pointer;
         text-decoration: none;
         border-radius: 4px;
+        transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
     .nav-link:hover {
         background-color: #555;
+        transform: scale(1.2);
+        font-weight: bold;
     }
 
     li {
@@ -59,11 +57,10 @@
 </style>
 
 
-    <nav>
-        <ul>
-            <li><a class="nav-link" href="accountDashboard.php">Dashboard</a></li>
-            <li>|</li>
-            <li><a class="nav-link" href="accountLogout.php">Logout</a></li>
-        </ul>
-    </nav>    
-
+<nav>
+    <ul>
+        <li><a class="nav-link" href="accountDashboard.php">Dashboard</a></li>
+        <li>|</li>
+        <li><a class="nav-link" href="accountLogout.php">Logout</a></li>
+    </ul>
+</nav>

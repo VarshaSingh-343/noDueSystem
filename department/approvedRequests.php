@@ -57,9 +57,8 @@ $query = "SELECT s.rollNo, s.name, s.Course, nd.requestId, rr.requestDate, nd.no
           FROM nodues nd
           JOIN refundrequest rr ON nd.requestId = rr.requestId
           JOIN student s ON rr.rollNo = s.rollNo
-          WHERE nd.noDueApproval != 'Yes' AND nd.deptId = ?";
+          WHERE nd.deptId = ?";
 $conditions[] = $deptId;
-
 $paramTypes = 's';
 
 if (isset($_POST['filter'])) {
@@ -199,14 +198,14 @@ if (!$result) {
                         <input type="date" name="endDate" id="endDate" value="<?php echo htmlspecialchars($selectedEndDate); ?>">
                     </div>
 
-                    <!-- <div class="filter-group">
+                    <div class="filter-group">
                         <label for="duesCleared">Dues Cleared:</label>
                         <select name="duesCleared" id="duesCleared">
                             <option value="">Select Dues Status</option>
                             <option value="Cleared" <?php if ($selectedDuesCleared == 'Cleared') echo 'selected'; ?>>Dues Cleared</option>
                             <option value="Not Cleared" <?php if ($selectedDuesCleared == 'Not Cleared') echo 'selected'; ?>>Dues Not Cleared</option>
                         </select>
-                    </div> -->
+                    </div>
 
                     <button type="submit" id="filter" name="filter">Filter</button>
                 </form>
@@ -244,8 +243,9 @@ if (!$result) {
                                         <?php if ($row['noDueApproval'] === 'Yes'): ?>
                                             <span>Cleared</span>
                                         <?php else: ?>
-                                            <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="Yes" required <?php echo ($row['noDueApproval'] === 'Yes') ? 'checked' : ''; ?>> Yes
-                                            <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="No" required <?php echo ($row['noDueApproval'] === 'No') ? 'checked' : ''; ?>> No
+                                            <!-- <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="Yes" required <?php echo ($row['noDueApproval'] === 'Yes') ? 'checked' : ''; ?>> Yes
+                                            <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="No" required <?php echo ($row['noDueApproval'] === 'No') ? 'checked' : ''; ?>> No -->
+                                            <span>Not Cleared</span>
                                         <?php endif; ?>
                                     </td>
 
@@ -259,7 +259,8 @@ if (!$result) {
                                         <?php if ($row['noDueApproval'] === 'Yes'): ?>
                                             <span>Dues Cleared</span>
                                         <?php else: ?>
-                                            <button type="button" class="approve-btn" onclick="submitRow('<?php echo htmlspecialchars($row['requestId']); ?>')">Submit</button>
+                                            <!-- <button type="button" class="approve-btn" onclick="submitRow('<?php echo htmlspecialchars($row['requestId']); ?>')">Submit</button> -->
+                                             <span>Dues Not Cleared</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

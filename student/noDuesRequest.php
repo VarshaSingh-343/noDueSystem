@@ -11,6 +11,7 @@ $rollNo = $_SESSION['rollno'];
 $requestSubmitted = false;
 $refundStatus = '';
 $uploadedCheque = '';
+$buttonText = "Upload Details";  // Default button text
 
 // Check if the student has already submitted a request
 $query = "SELECT * FROM refundrequest WHERE rollNo = ?";
@@ -26,15 +27,26 @@ if ($result->num_rows > 0) {
 }
 
 // Check if the student has uploaded a cheque
-$chequeQuery = "SELECT filePath FROM uploadcheque WHERE rollNo = ?";
+$chequeQuery = "SELECT * FROM uploadcheque WHERE rollNo = ?";
 $chequeStmt = $conn->prepare($chequeQuery);
 $chequeStmt->bind_param("s", $rollNo);
 $chequeStmt->execute();
 $chequeResult = $chequeStmt->get_result();
 
-if ($chequeResult->num_rows > 0) {
-    $chequeRow = $chequeResult->fetch_assoc();
-    $uploadedCheque = $chequeRow['filePath'];
+$chequeData = $chequeResult->fetch_assoc();
+
+if ($chequeData) {
+    $uploadedCheque = $chequeData['filePath'];
+    $buttonText = "Update Details";  // Change button text if a cheque is already uploaded
+    $accHolderName = $chequeData['accHolderName'];
+    $bankName = $chequeData['bankName'];
+    $accountNo = $chequeData['accountNo'];
+    $ifscCode = $chequeData['ifscCode'];
+} else {
+    $accHolderName = '';
+    $bankName = '';
+    $accountNo = '';
+    $ifscCode = '';
 }
 
 $chequeStmt->close();
@@ -53,6 +65,10 @@ $stmt->close();
             opacity: 0.5;
             pointer-events: none;
         }
+        .disabled-field {
+            background-color: #f0f0f0;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -61,7 +77,7 @@ $stmt->close();
             <div class="header-item">
                 <?php if (isset($_SESSION['rollno'])): ?>
                     <div class="welcome-message">
-                        The track dues page!
+                        Request No Dues!
                     </div>
                 <?php endif; ?>
             </div>
@@ -81,32 +97,84 @@ $stmt->close();
                 <div class="message">You have already submitted a No Dues Request.</div>
             <?php endif; ?>
 
-            <?php if ($uploadedCheque): ?>
-                <div class="uploaded-cheque">
-                    <h3>Your Uploaded Cheque:</h3>
-                    <a href="<?php echo $uploadedCheque; ?>" target="_blank">View Uploaded Cheque</a>
-                </div>
-            <?php endif; ?>
-
             <?php if ($refundStatus !== 'Yes'): ?>
-                <form action="processRequest.php" method="post" enctype="multipart/form-data">
-                    <h2>Upload/Replace Cancelled Cheque</h2>
-                    <label for="file">Select the canceled cheque to upload:</label>
-                    <input type="file" name="file" id="file" accept="application/pdf" required>
+                <form action="processRequest.php" method="post" enctype="multipart/form-data" id="detailsForm">
+                    <h2>Upload/Update your Account Details</h2>
+                    <div class="form-item">
+                        <label for="accHolderName">Account Holder Name:</label>
+                        <input type="text" name="accHolderName" id="accHolderName" value="<?php echo htmlspecialchars($accHolderName); ?>">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="bankName">Bank Name:</label>
+                        <input type="text" name="bankName" id="bankName" value="<?php echo htmlspecialchars($bankName); ?>">
+                    </div>
 
+                    <div class="form-item">
+                        <label for="accountNo">Account Number:</label>
+                        <input type="text" name="accountNo" id="accountNo" value="<?php echo htmlspecialchars($accountNo); ?>">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="ifscCode">IFSC Code:</label>
+                        <input type="text" name="ifscCode" id="ifscCode" value="<?php echo htmlspecialchars($ifscCode); ?>">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="file">Upload your cancelled cheque:</label>
+                        <input type="file" name="file" id="file" accept="application/pdf">
+                    </div>
+                    
                     <div class="info">
                         *Allowed type: PDF<br>
                         *Max size: 2MB
                     </div>
 
-                    <button id = "updatecheque" type="submit">Upload Cheque</button>
+                    <button id="updatecheque" type="submit"><?php echo $buttonText; ?></button>
                 </form>
+
+                <?php if ($uploadedCheque): ?>
+                    <div class="uploaded-cheque">
+                        <h3>Your Uploaded Cheque:</h3>
+                        <a href="<?php echo htmlspecialchars($uploadedCheque); ?>" target="_blank">View Uploaded Cheque</a>
+                    </div>
+                <?php endif; ?>
+
             <?php else: ?>
-                <div class="message">Your Refund has already been processed. You cannot change the uploaded cheque.</div>
+                
+                <div id="detailsForm">
+                    <h2>Uploaded Account Details</h2>
+                    <div class="form-item">
+                        <label for="accHolderName">Account Holder Name:</label>
+                        <input type="text" name="accHolderName" id="accHolderName" value="<?php echo htmlspecialchars($accHolderName); ?>" class="disabled-field" disabled>
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="bankName">Bank Name:</label>
+                        <input type="text" name="bankName" id="bankName" value="<?php echo htmlspecialchars($bankName); ?>" class="disabled-field" disabled>
+                    </div>
+
+                    <div class="form-item">
+                        <label for="accountNo">Account Number:</label>
+                        <input type="text" name="accountNo" id="accountNo" value="<?php echo htmlspecialchars($accountNo); ?>" class="disabled-field" disabled>
+                    </div>
+                
+                    <div class="form-item">
+                        <label for="ifscCode">IFSC Code:</label>
+                        <input type="text" name="ifscCode" id="ifscCode" value="<?php echo htmlspecialchars($ifscCode); ?>" class="disabled-field" disabled>
+                    </div>
+
+                    <div class="uploaded-cheque">
+                        <h3>Your Uploaded Cheque:</h3>
+                        <a href="<?php echo htmlspecialchars($uploadedCheque); ?>" target="_blank">View Uploaded Cheque</a>
+                    </div>
+                </div>
+                
+
+                <div class="message">Your Refund has already been processed. You cannot change the uploaded details.</div>
             <?php endif; ?>
 
             <?php if ($requestSubmitted): ?>
-                <!-- <div class="message">You have already submitted a No Dues Request.</div> -->
                 <form action="trackStatus.php" method="get">
                     <button type="submit">Track Refund Status</button>
                 </form>

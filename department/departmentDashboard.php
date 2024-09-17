@@ -71,7 +71,10 @@ $departmentName = isset($deptNames[$deptId]) ? $deptNames[$deptId] : 'Unknown De
             <?php endif; ?>
 
             <a href="viewRefundRequests.php">
-                <button class="toggle-btn">View Refund Requests</button>
+                <button class="toggle-btn">Approve Students No Dues Request</button>
+            </a>
+            <a href="approvedRequests.php">
+                <button class="toggle-btn">View Requests Reports</button>
             </a>
 
 

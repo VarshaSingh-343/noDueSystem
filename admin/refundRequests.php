@@ -72,7 +72,7 @@ if (isset($_POST['filter'])) {
 }
 
 // Base query with refund request and student data
-$query = "SELECT refundrequest.rollNo, refundrequest.requestDate, refundrequest.refundStatus, 
+$query = "SELECT refundrequest.rollNo, student.Course, refundrequest.requestDate, refundrequest.refundStatus, 
                  refundrequest.refundDate, refundrequest.refundDescription,
                  nodues.deptId, nodues.noDueApproval, nodues.noDueComment, department.deptName,
                  uploadcheque.filePath
@@ -104,6 +104,7 @@ while ($row = $result->fetch_assoc()) {
     if (!isset($refundData[$rollNo])) {
         $refundData[$rollNo] = [
             'rollNo' => $row['rollNo'],
+            'Course' => $row['Course'],
             'requestDate' => $row['requestDate'],
             'refundStatus' => $row['refundStatus'],
             'refundDate' => $row['refundDate'],
@@ -222,6 +223,7 @@ while ($row = $result->fetch_assoc()) {
                     <thead>
                         <tr>
                             <th>Roll No</th>
+                            <th>Course</th>
                             <th>Request Date</th>
                             <?php 
                             if ($departmentResult = $conn->query("SELECT deptName FROM department")) {
@@ -240,6 +242,7 @@ while ($row = $result->fetch_assoc()) {
                         <?php foreach ($refundData as $rollNo => $data): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($data['rollNo']); ?></td>
+                                <td><?php echo htmlspecialchars($data['Course']); ?></td>
                                 <td><?php echo htmlspecialchars($data['requestDate']); ?></td>
                                 <?php foreach ($data['departments'] as $deptName => $deptData): ?>
                                     <td>

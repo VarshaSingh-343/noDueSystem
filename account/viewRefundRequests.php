@@ -33,13 +33,13 @@ if (isset($_POST['filter'])) {
         $conditions[] = "s.Course = ?";
         $params[] = $selectedCourse;
     }
-    
+
     if (!empty($_POST['batchSession'])) {
         $selectedBatch = $_POST['batchSession'];
         $conditions[] = "s.batchSession = ?";
         $params[] = $selectedBatch;
     }
-    
+
     if (!empty($_POST['refundStatus'])) {
         $selectedRefundStatus = $_POST['refundStatus'];
         $conditions[] = "rr.refundStatus = ?";
@@ -51,7 +51,7 @@ if (isset($_POST['filter'])) {
         $conditions[] = "rr.requestDate >= ?";
         $params[] = $selectedStartDate;
     }
-    
+
     if (!empty($_POST['endDate'])) {
         $selectedEndDate = $_POST['endDate'];
         $conditions[] = "rr.requestDate <= ?";
@@ -70,49 +70,56 @@ if (isset($_POST['filter'])) {
     }
 }
 
-// Base query for displaying refund requests
-$query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.securityAmount, rr.requestDate, rr.refundStatus, rr.refundDate, rr.refundDescription,
+$query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.securityAmount, rr.requestDate, rr.refundDate, rr.refundDescription,
           (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId AND n.noDueApproval = 'Yes') as countYes,
           (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId) as totalDepts,
-          uc.filePath
+          uc.filePath, uc.accHolderName, uc.bankName, uc.accountNo, uc.ifscCode
           FROM refundrequest rr
           JOIN student s ON rr.rollNo = s.rollNo
-          LEFT JOIN uploadcheque uc ON s.rollNo = uc.rollNo";
+          LEFT JOIN uploadcheque uc ON s.rollNo = uc.rollNo where rr.refundStatus != 'Yes'";
 
-// Add conditions if filters are selected
 if (!empty($conditions)) {
-    $query .= " WHERE " . implode(" AND ", $conditions);
+    $query .= " AND " . implode(" AND ", $conditions);
 }
 
 $query .= " ORDER BY s.rollNo";
 
-// Prepare and execute the query
+// Prepare the query
 $stmt = $conn->prepare($query);
 
+// Check if the prepare failed
+if (!$stmt) {
+    die("Error preparing query: " . $conn->error);
+}
+
 if (!empty($params)) {
-    $paramTypes = str_repeat("s", count($params)); // Assuming all parameters are strings
+    $paramTypes = str_repeat("s", count($params));
     $stmt->bind_param($paramTypes, ...$params);
 }
 
+// Execute the query
 $stmt->execute();
 $result = $stmt->get_result();
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Refund Requests</title>
     <link rel="stylesheet" href="accountDashboard.css">
 </head>
+
 <body>
     <div class="container">
         <header>
             <div class="header-item">
                 <?php if (isset($_SESSION['username'])): ?>
                     <div class="welcome-message">
-                        <h2>Refund Requests</h2>
+                        <h2>Students No Dues Requests</h2>
                     </div>
                 <?php endif; ?>
             </div>
@@ -121,43 +128,30 @@ $result = $stmt->get_result();
 
         <div id="filterSection">
             <form method="POST" action="">
-                <label for="course">Filter by Course:</label>
-                <select name="course" id="course">
-                    <option value="">Select Course</option>
-                    <?php while ($courseRow = $courseResult->fetch_assoc()): ?>
-                        <option value="<?php echo htmlspecialchars($courseRow['Course']); ?>"
-                            <?php if ($selectedCourse == $courseRow['Course']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($courseRow['Course']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-
-                <label for="batchSession">Filter by Batch:</label>
-                <select name="batchSession" id="batchSession">
-                    <option value="">Select Batch</option>
-                    <?php while ($batchRow = $batchResult->fetch_assoc()): ?>
-                        <option value="<?php echo htmlspecialchars($batchRow['batchSession']); ?>"
-                            <?php if ($selectedBatch == $batchRow['batchSession']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($batchRow['batchSession']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-
-                <label for="refundStatus">Filter by Refund Initiated:</label>
-                <select name="refundStatus" id="refundStatus">
-                    <option value="">Select Status</option>
-                    <option value="Yes" <?php if ($selectedRefundStatus == 'Yes') echo 'selected'; ?>>Initiated</option>
-                    <option value="No" <?php if ($selectedRefundStatus == 'No') echo 'selected'; ?>>Non Initiated</option>
-                </select>
-
                 <div class="filter-group">
-                    <label for="startDate">Start Date:</label>
-                    <input type="date" name="startDate" id="startDate" value="<?php echo htmlspecialchars($selectedStartDate); ?>">
+                    <label for="course">Filter by Course:</label>
+                    <select name="course" id="course">
+                        <option value="">Select Course</option>
+                        <?php while ($courseRow = $courseResult->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($courseRow['Course']); ?>"
+                                <?php if ($selectedCourse == $courseRow['Course']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($courseRow['Course']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
                 </div>
 
                 <div class="filter-group">
-                    <label for="endDate">End Date:</label>
-                    <input type="date" name="endDate" id="endDate" value="<?php echo htmlspecialchars($selectedEndDate); ?>">
+                    <label for="batchSession">Filter by Batch:</label>
+                    <select name="batchSession" id="batchSession">
+                        <option value="">Select Batch</option>
+                        <?php while ($batchRow = $batchResult->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($batchRow['batchSession']); ?>"
+                                <?php if ($selectedBatch == $batchRow['batchSession']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($batchRow['batchSession']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
                 </div>
 
                 <div class="filter-group">
@@ -169,92 +163,111 @@ $result = $stmt->get_result();
                     </select>
                 </div>
 
+                <div class="filter-group">
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" name="startDate" id="startDate" value="<?php echo htmlspecialchars($selectedStartDate); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" name="endDate" id="endDate" value="<?php echo htmlspecialchars($selectedEndDate); ?>">
+                </div>                
+
                 <button type="submit" id="filter" name="filter">Filter</button>
             </form>
         </div>
 
         <h3>Details of No Dues requested by Students</h3>
         <div class="table-container">
-            <table id="refundTable">
-                <thead>
-                    <tr>
-                        <th>Request ID</th>
-                        <th>Roll Number</th>
-                        <th>Name</th>
-                        <th>Course</th>
-                        <th>Batch</th>
-                        <th>Security Amount</th>
-                        <th>Request Date</th>
-                        <th>No Dues Status</th> 
-                        <th>Refund Date</th>
-                        <th>Refund Description</th>
-                        <th>Refund Initiation</th>        
-                    </tr>
-                </thead>
-                <tbody>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['requestId']); ?></td>
-                        <td><?php echo htmlspecialchars($row['rollNo']); ?></td>
-                        <td><?php echo htmlspecialchars($row['name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['course']); ?></td>
-                        <td><?php echo htmlspecialchars($row['batchSession']); ?></td>
-                        <td><?php echo htmlspecialchars($row['securityAmount']); ?></td>
-                        <td><?php echo htmlspecialchars($row['requestDate']); ?></td>
-                        <td>
-                            <?php echo $row['countYes'] == $row['totalDepts'] ? 'Cleared' : 'Not Cleared'; ?> 
-                        </td>
-                        <td><?php echo htmlspecialchars($row['refundDate']); ?></td>
-                        <td><?php echo htmlspecialchars($row['refundDescription']); ?></td>
-                        <td>
-                            <?php if ($row['refundStatus'] == 'Yes'): ?>
-                                Refund is initiated
-                            <?php elseif ($row['countYes'] == $row['totalDepts']): ?>
-                                <button id="greenYes" onclick="openModal('<?php echo $row['requestId']; ?>', '<?php echo $row['filePath']; ?>')">Initiate Refund</button>
-                            <?php else: ?>
-                                <button id="redNo">No Refund</button>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-                </tbody>
-            </table>
+            <?php if ($result->num_rows > 0): ?>
+                <table id="refundTable">
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Name</th>
+                            <th>Course</th>
+                            <th>Security Amount</th>
+                            <th>Request Date</th>
+                            <th>Account Details</th>
+                            <th>Cheque</th>
+                            <th>No Dues Status</th>
+                            <th>Refund Date</th>
+                            <th>Refund Description</th>
+                            <th>Refund Initiation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($row['rollNo']); ?></td>
+                                <td><?php echo htmlspecialchars($row['name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['course']); ?></td>
+                                <td><?php echo htmlspecialchars($row['securityAmount']); ?></td>
+                                <td><?php echo htmlspecialchars($row['requestDate']); ?></td>
+                                <td>
+                                    <strong>A/c Holder Name:</strong> <?php echo htmlspecialchars($row['accHolderName']); ?><br>
+                                    <strong>Bank Name:</strong> <?php echo htmlspecialchars($row['bankName']); ?><br>
+                                    <strong>Account No:</strong> <?php echo htmlspecialchars($row['accountNo']); ?><br>
+                                    <strong>IFSC Code:</strong> <?php echo htmlspecialchars($row['ifscCode']); ?><br>
+                                </td>
+                                <td><a href="<?php echo htmlspecialchars($row['filePath']); ?>" target="_blank">View Uploaded Cheque</a></td>
+                                <td>
+                                    <?php echo $row['countYes'] == $row['totalDepts'] ? 'Cleared' : 'Not Cleared'; ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($row['refundDate']); ?></td>
+                                <td><?php echo htmlspecialchars($row['refundDescription']); ?></td>
+                                <td>
+                                    <?php if ($row['countYes'] == $row['totalDepts']): ?>
+                                        <button id="greenYes" onclick="openModal('<?php echo $row['requestId']; ?>', '<?php echo $row['filePath']; ?>')">Initiate Refund</button>
+                                    <?php else: ?>
+                                        <button id="redNo">No Refund</button>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p id="noRecord">No records available for the selected filters.</p>
+            <?php endif; ?>
         </div>
     </div>
 
-    
-<div id="refundModal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Initiate Refund</h2>
-        <form id="refundForm" method="POST" action="processRefund.php">
-            <input type="hidden" name="requestId" id="requestId">
-            <div class="form-group">
-                <label for="filePath">Uploaded Cheque:</label>
-                <a id="checkImage" href="#" target="_blank">View Uploaded Cheque</a>
-            </div>
-            <div class="form-group">
-                <label for="refundDescription">Refund Description:</label>
-                <textarea name="refundDescription" id="refundDescription" required></textarea>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
+
+    <div id="refundModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Initiate Refund</h2>
+            <form id="refundForm" method="POST" action="processRefund.php">
+                <input type="hidden" name="requestId" id="requestId">
+                <div class="form-group">
+                    <label for="filePath">Uploaded Cheque:</label>
+                    <a id="checkImage" href="#" target="_blank">View Uploaded Cheque</a>
+                </div>
+                <div class="form-group">
+                    <label for="refundDescription">Refund Description:</label>
+                    <textarea name="refundDescription" id="refundDescription" required></textarea>
+                </div>
+                <button id="submitModal" type="submit">Submit</button>
+            </form>
+        </div>
     </div>
-</div>
-<script>
-    function openModal(requestId, filePath) {
-        document.getElementById('requestId').value = requestId;
-        // Update the href of the link with the filePath
-        var checkImageLink = document.getElementById('checkImage');
-        checkImageLink.href = filePath;
-        checkImageLink.innerText = "View Uploaded Cheque"; // Update link text if needed
-        document.getElementById('refundModal').style.display = 'block';
-    }
-    function closeModal() {
-        document.getElementById('refundModal').style.display = 'none';
-    }
-</script>
+    <script>
+        function openModal(requestId, filePath) {
+            document.getElementById('requestId').value = requestId;
+            // Update the href of the link with the filePath
+            var checkImageLink = document.getElementById('checkImage');
+            checkImageLink.href = filePath;
+            checkImageLink.innerText = "View Uploaded Cheque"; // Update link text if needed
+            document.getElementById('refundModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('refundModal').style.display = 'none';
+        }
+    </script>
 
 
 </body>
+
 </html>

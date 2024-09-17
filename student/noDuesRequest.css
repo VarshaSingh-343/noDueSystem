@@ -29,15 +29,23 @@ button:hover {
     background-color: #6a1b9a;
 }
 
-form {
+#detailsForm {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 7px;
     align-items: center;
-    /* margin-top: 5px; */
+    border: 1px solid rgb(45, 45, 45);
+    box-shadow: 0 4px 8px rgb(45, 45, 45);
+    margin-bottom: 15px;
+}
+
+.form-item{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
 }
 
 label {
@@ -45,19 +53,21 @@ label {
     font-weight: bold;
     color: #4A148C;
     display: block;
+    width: 300px;
+    text-align: center;
 }
 
-input[type="file"] {
-    padding: 8px;
+input[type="text"], input[type="file"]{
+    padding: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
-    width: 100%;
+    width: 40%;
 }
 
 .info {
     font-size: 12px;
-    margin: 10px;
+    margin: 7px;
 }
 
 .welcome-message {

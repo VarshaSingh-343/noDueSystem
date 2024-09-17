@@ -44,9 +44,10 @@ $username = $_SESSION['username'];
             <?php endif; ?>
 
             <div class = "button">
-                <button class="toggle-btn" onclick="window.location.href='viewRefundRequests.php'">View Refund Requests</button>
-                <button class="toggle-btn" onclick="window.location.href='viewInitiatedRefunds.php'">View Initiated Refunds</button>
+                <button class="toggle-btn" onclick="window.location.href='viewRefundRequests.php'">Students No Dues Refund Requests </button>
+                <button class="toggle-btn" onclick="window.location.href='viewInitiatedRefunds.php'">View Students Initiated Refunds </button>
             </div>
+        </main>
 
 </body>
 </html>
