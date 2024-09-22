@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 18, 2024 at 09:35 PM
+-- Generation Time: Sep 22, 2024 at 10:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -71,11 +71,11 @@ INSERT INTO `nodues` (`noDueId`, `requestId`, `deptId`, `noDueApproval`, `noDueC
 (6, 'REQbba74', 'D02', 'Yes', 'approved', '2024-08-23 17:17:44'),
 (7, 'REQbba74', 'D03', 'Yes', 'approved', '2024-08-23 17:18:52'),
 (8, 'REQbba74', 'D04', 'Yes', 'dues cleared', '2024-08-24 00:01:18'),
-(9, 'REQbca55', 'D01', 'No', 'not deposited', '2024-08-22 23:37:59'),
+(9, 'REQbca55', 'D01', 'Yes', 'all fee deposited', '2024-09-21 09:18:51'),
 (10, 'REQbca55', 'D02', 'Yes', 'books deposited', '2024-08-30 11:54:33'),
 (11, 'REQbca55', 'D03', 'Yes', 'approved', '2024-08-25 22:00:28'),
-(12, 'REQbca55', 'D04', 'No', 'some documents not submitted', '2024-08-28 11:59:04'),
-(13, 'REQmba06', 'D01', 'No', NULL, NULL),
+(12, 'REQbca55', 'D04', 'Yes', 'all documents  submitted', '2024-09-21 09:19:35'),
+(13, 'REQmba06', 'D01', 'Yes', 'fee all cleared', '2024-09-19 01:14:12'),
 (14, 'REQmba06', 'D02', 'No', '1 book not submitted', '2024-08-25 17:55:15'),
 (15, 'REQmba06', 'D03', 'No', NULL, NULL),
 (16, 'REQmba06', 'D04', 'No', NULL, NULL),
@@ -112,23 +112,25 @@ CREATE TABLE `refundrequest` (
   `requestDate` datetime DEFAULT current_timestamp(),
   `refundDate` datetime DEFAULT NULL,
   `refundDescription` varchar(255) DEFAULT NULL,
-  `refundStatus` varchar(10) DEFAULT 'No'
+  `refundStatus` varchar(10) DEFAULT 'No',
+  `verifyDetails` varchar(255) DEFAULT NULL,
+  `verifyReason` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `refundrequest`
 --
 
-INSERT INTO `refundrequest` (`requestId`, `rollNo`, `requestDate`, `refundDate`, `refundDescription`, `refundStatus`) VALUES
-('REQbba74', 'bba74', '2024-08-22 12:37:10', '2024-08-24 21:09:10', 'refund to be processed in your bank account in 3,4 days.', 'Yes'),
-('REQbca55', 'bca55', '2024-08-22 22:58:56', NULL, NULL, 'No'),
-('REQbcom07', 'bcom07', '2024-08-25 17:21:36', NULL, NULL, 'No'),
-('REQmba04', 'mba04', '2024-08-27 10:08:23', NULL, NULL, 'No'),
-('REQmba06', 'mba06', '2024-08-22 23:37:14', NULL, NULL, 'No'),
-('REQmca01', 'mca01', '2024-08-22 12:36:19', '2024-08-23 20:46:37', 'Your refund is initiated and amount will be transferred in 4-5 days.', 'Yes'),
-('REQmca10', 'mca10', '2024-08-24 09:55:52', '2024-08-24 10:14:20', 'refund initiated and amount be transferred in 4,5 days.', 'Yes'),
-('REQmca20', 'mca20', '2024-09-19 01:03:57', NULL, NULL, 'No'),
-('REQmca71', 'mca71', '2024-08-23 23:42:40', NULL, NULL, 'No');
+INSERT INTO `refundrequest` (`requestId`, `rollNo`, `requestDate`, `refundDate`, `refundDescription`, `refundStatus`, `verifyDetails`, `verifyReason`) VALUES
+('REQbba74', 'bba74', '2024-08-22 12:37:10', '2024-08-24 21:09:10', 'refund to be processed in your bank account in 3,4 days.', 'Yes', 'Verified', ''),
+('REQbca55', 'bca55', '2024-08-22 22:58:56', '2024-09-21 09:36:28', 'security amount initiated', 'Yes', 'Verified', ''),
+('REQbcom07', 'bcom07', '2024-08-25 17:21:36', '2024-09-20 07:09:29', 'refund initiated ', 'Yes', 'Verified', ''),
+('REQmba04', 'mba04', '2024-08-27 10:08:23', NULL, NULL, 'No', 'Verified', 'account number not matching'),
+('REQmba06', 'mba06', '2024-08-22 23:37:14', NULL, NULL, 'No', 'Verified', ''),
+('REQmca01', 'mca01', '2024-08-22 12:36:19', '2024-08-23 20:46:37', 'Your refund is initiated and amount will be transferred in 4-5 days.', 'Yes', 'Verified', ''),
+('REQmca10', 'mca10', '2024-08-24 09:55:52', '2024-08-24 10:14:20', 'refund initiated and amount be transferred in 4,5 days.', 'Yes', 'Verified', ''),
+('REQmca20', 'mca20', '2024-09-19 01:03:57', NULL, NULL, 'No', '', ''),
+('REQmca71', 'mca71', '2024-08-23 23:42:40', NULL, NULL, 'No', 'Verified', '');
 
 -- --------------------------------------------------------
 
@@ -198,7 +200,7 @@ INSERT INTO `uploadcheque` (`uploadId`, `rollNo`, `filePath`, `accHolderName`, `
 (5, 'mca71', '../admin/uploadFile/mca71_form.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
 (6, 'mca10', '../admin/uploadFile/mca10_tc.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
 (7, 'bcom07', '../admin/uploadFile/bcom07_mca 1.pdf', 'My Name', 'My Bank', '6534882345557', 'Bank00121'),
-(8, 'mba04', '../admin/uploadFile/mba04_5th Semester Result.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(8, 'mba04', '../admin/uploadFile/mba04_5th Semester Result.pdf', 'my name', 'My Bank', '9999900234', 'Bank34355'),
 (9, 'mca20', '../admin/uploadFile/mca20_mca 1.pdf', 'sanjay kumar', 'SBI ', '409890344759', 'sbi4353');
 
 --
