@@ -55,6 +55,7 @@ $stmt->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -65,12 +66,14 @@ $stmt->close();
             opacity: 0.5;
             pointer-events: none;
         }
+
         .disabled-field {
             background-color: #f0f0f0;
             color: #888;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -83,18 +86,26 @@ $stmt->close();
             </div>
             <?php include 'nav.php'; ?>
         </header>
-        
+
         <main>
             <?php if (isset($_SESSION['success_message'])): ?>
-                <div class="message"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+                <div class="message"><?php echo $_SESSION['success_message'];
+                                        unset($_SESSION['success_message']); ?></div>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['error_message'])): ?>
-                <div class="message error"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+                <div class="message error"><?php echo $_SESSION['error_message'];
+                                            unset($_SESSION['error_message']); ?></div>
             <?php endif; ?>
 
             <?php if ($requestSubmitted): ?>
                 <div class="message">You have already submitted a No Dues Request.</div>
+            <?php endif; ?>
+
+            <?php if ($requestSubmitted): ?>
+                    <form action="trackStatus.php" method="get">
+                        <button type="submit" id="track">Track Refund Status</button>
+                    </form>
             <?php endif; ?>
 
             <?php if ($refundStatus !== 'Yes'): ?>
@@ -104,7 +115,7 @@ $stmt->close();
                         <label for="accHolderName">Account Holder Name:</label>
                         <input type="text" name="accHolderName" id="accHolderName" value="<?php echo htmlspecialchars($accHolderName); ?>">
                     </div>
-                    
+
                     <div class="form-item">
                         <label for="bankName">Bank Name:</label>
                         <input type="text" name="bankName" id="bankName" value="<?php echo htmlspecialchars($bankName); ?>">
@@ -114,17 +125,17 @@ $stmt->close();
                         <label for="accountNo">Account Number:</label>
                         <input type="text" name="accountNo" id="accountNo" value="<?php echo htmlspecialchars($accountNo); ?>">
                     </div>
-                    
+
                     <div class="form-item">
                         <label for="ifscCode">IFSC Code:</label>
                         <input type="text" name="ifscCode" id="ifscCode" value="<?php echo htmlspecialchars($ifscCode); ?>">
                     </div>
-                    
+
                     <div class="form-item">
                         <label for="file">Upload your cancelled cheque:</label>
                         <input type="file" name="file" id="file" accept="application/pdf">
                     </div>
-                    
+
                     <div class="info">
                         *Allowed type: PDF<br>
                         *Max size: 2MB
@@ -132,6 +143,8 @@ $stmt->close();
 
                     <button id="updatecheque" type="submit"><?php echo $buttonText; ?></button>
                 </form>
+
+                
 
                 <?php if ($uploadedCheque): ?>
                     <div class="uploaded-cheque">
@@ -141,14 +154,14 @@ $stmt->close();
                 <?php endif; ?>
 
             <?php else: ?>
-                
+
                 <div id="detailsForm">
                     <h2>Uploaded Account Details</h2>
                     <div class="form-item">
                         <label for="accHolderName">Account Holder Name:</label>
                         <input type="text" name="accHolderName" id="accHolderName" value="<?php echo htmlspecialchars($accHolderName); ?>" class="disabled-field" disabled>
                     </div>
-                    
+
                     <div class="form-item">
                         <label for="bankName">Bank Name:</label>
                         <input type="text" name="bankName" id="bankName" value="<?php echo htmlspecialchars($bankName); ?>" class="disabled-field" disabled>
@@ -158,7 +171,7 @@ $stmt->close();
                         <label for="accountNo">Account Number:</label>
                         <input type="text" name="accountNo" id="accountNo" value="<?php echo htmlspecialchars($accountNo); ?>" class="disabled-field" disabled>
                     </div>
-                
+
                     <div class="form-item">
                         <label for="ifscCode">IFSC Code:</label>
                         <input type="text" name="ifscCode" id="ifscCode" value="<?php echo htmlspecialchars($ifscCode); ?>" class="disabled-field" disabled>
@@ -169,17 +182,14 @@ $stmt->close();
                         <a href="<?php echo htmlspecialchars($uploadedCheque); ?>" target="_blank">View Uploaded Cheque</a>
                     </div>
                 </div>
-                
+
 
                 <div class="message">Your Refund has already been processed. You cannot change the uploaded details.</div>
             <?php endif; ?>
 
-            <?php if ($requestSubmitted): ?>
-                <form action="trackStatus.php" method="get">
-                    <button type="submit">Track Refund Status</button>
-                </form>
-            <?php endif; ?>
+
         </main>
     </div>
 </body>
+
 </html>

@@ -68,16 +68,21 @@ textarea {
     margin-top: 5px;
 }
 
-.message {
+.success_message, .error_message {
     color: green;
     font-size: 16px;
     margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid black;
+    margin: 3px;
 }
 
-.error-message {
+.success_message{
+    color: green;
+}
+
+.error_message {
     color: red;
-    font-size: 16px;
-    margin-bottom: 20px;
 }
 
 .button{
@@ -103,24 +108,28 @@ textarea {
     scale: 1.1;
 }
 
-#greenYes {
+.greenYes {
     background-color: #45a049;
     color: white;
     padding: 5px;
     border: none;
     font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
 }
 
-#greenYes:hover{
+.greenYes:hover{
     scale:1.1;
 }
 
-#redNo {
+#redNo, #notVerified{
     background-color: #f14242;
     color: white;
     padding: 5px;
     border: none;
     font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
 }
 
 #refundModal {
@@ -264,5 +273,15 @@ td {
 
 #noRecord{
     text-align: center;
+}
+
+.verifyDetails{
+    padding: 3px;
+    margin: 5px 0;
+}
+
+.verifyReason{
+    width: 130px;
+    margin: 10px 0px;
 }
 

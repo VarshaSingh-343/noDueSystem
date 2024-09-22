@@ -2,28 +2,51 @@
 session_start();
 include '../connect.php';
 
+date_default_timezone_set('Asia/Kolkata');
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $requestId = $_POST['requestId'];
-    $refundDescription = $_POST['refundDescription'];
-    $refundDate = date('Y-m-d H:i:s');
 
-    // Update the refundrequest table
-    $updateQuery = "UPDATE refundrequest 
-                    SET refundDate = ?, refundDescription = ?, refundStatus = 'Yes'
-                    WHERE requestId = ?";
-    $stmt = $conn->prepare($updateQuery);
-    $stmt->bind_param("sss", $refundDate, $refundDescription, $requestId);
+    if (isset($_POST['refundDescription'])) {
+        $requestId = $_POST['requestId'];
+        $refundDescription = $_POST['refundDescription'];
+        $refundDate = date('Y-m-d H:i:s');
 
-    if ($stmt->execute()) {
-        $_SESSION['success_message'] = "Refund initiated successfully!";
-    } else {
-        $_SESSION['error_message'] = "Failed to initiate refund.";
+        $updateQuery = "UPDATE refundrequest 
+                        SET refundDate = ?, refundDescription = ?, refundStatus = 'Yes'  
+                        WHERE requestId = ?";
+        $stmt = $conn->prepare($updateQuery);
+        $stmt->bind_param("sss", $refundDate, $refundDescription, $requestId);
+
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Refund initiated successfully!";
+        } else {
+            $_SESSION['error_message'] = "Failed to initiate refund. Please try again.";
+        }
+        $stmt->close();
+        header("Location: viewRefundRequests.php");
+        exit();
     }
 
-    $stmt->close();
-    $conn->close();
+    if (isset($_POST['verifyDetails'])) {
+        $verifyDetails = $_POST['verifyDetails'];
+        if ($verifyDetails == 'Verified') {
+            $verifyReason = ''; // Set verifyReason to an empty string
+        } else {
+            $verifyReason = isset($_POST['verifyReason']) ? $_POST['verifyReason'] : '';
+        }
+        $requestId = $_POST['requestId'];
 
-    header("Location: accountDashboard.php");
-    exit();
+        $updateQuery = "UPDATE refundrequest SET verifyDetails = ?, verifyReason = ? WHERE requestId = ?";
+        $stmt = $conn->prepare($updateQuery);
+        $stmt->bind_param("sss", $verifyDetails, $verifyReason, $requestId);
+
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Verification updated successfully!";
+        } else {
+            $_SESSION['error_message'] = "Failed to update verification details. Please try again.";
+        }
+        $stmt->close();
+        header("Location: viewRefundRequests.php");
+        exit();
+    }
 }
-?>

@@ -68,9 +68,15 @@ if (isset($_POST['filter'])) {
             (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId)";
         }
     }
+
+    if (!empty($_POST['verifyDetails'])) {
+        $selectedVerifyDetails = $_POST['verifyDetails'];
+        $conditions[] = "rr.verifyDetails = ?";
+        $params[] = $selectedVerifyDetails;
+    }
 }
 
-$query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.securityAmount, rr.requestDate, rr.refundDate, rr.refundDescription,
+$query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.securityAmount, rr.requestDate, rr.refundDate, rr.refundDescription, rr.verifyDetails, rr.verifyReason,
           (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId AND n.noDueApproval = 'Yes') as countYes,
           (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId) as totalDepts,
           uc.filePath, uc.accHolderName, uc.bankName, uc.accountNo, uc.ifscCode
@@ -126,6 +132,16 @@ $result = $stmt->get_result();
             <?php include 'accountNav.php'; ?>
         </header>
 
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div class="success_message"><?php echo $_SESSION['success_message'];
+                                            unset($_SESSION['success_message']); ?></div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['error_message'])): ?>
+            <div class="error-message"><?php echo $_SESSION['error_message'];
+                                        unset($_SESSION['error_message']); ?></div>
+        <?php endif; ?>
+
         <div id="filterSection">
             <form method="POST" action="">
                 <div class="filter-group">
@@ -171,7 +187,16 @@ $result = $stmt->get_result();
                 <div class="filter-group">
                     <label for="endDate">End Date:</label>
                     <input type="date" name="endDate" id="endDate" value="<?php echo htmlspecialchars($selectedEndDate); ?>">
-                </div>                
+                </div>
+
+                <div class="filter-group">
+                    <label for="verifyDetails">Filter by Verify Details:</label>
+                    <select name="verifyDetails" id="verifyDetails">
+                        <option value="">Select Verify Details</option>
+                        <option value="Verified">Verified</option>
+                        <option value="Not Verified">Not Verified</option>
+                    </select>
+                </div>
 
                 <button type="submit" id="filter" name="filter">Filter</button>
             </form>
@@ -191,8 +216,9 @@ $result = $stmt->get_result();
                             <th>Account Details</th>
                             <th>Cheque</th>
                             <th>No Dues Status</th>
-                            <th>Refund Date</th>
-                            <th>Refund Description</th>
+                            <!-- <th>Refund Date</th>
+                            <th>Refund Description</th> -->
+                            <th>Verify Details</th>
                             <th>Refund Initiation</th>
                         </tr>
                     </thead>
@@ -214,18 +240,50 @@ $result = $stmt->get_result();
                                 <td>
                                     <?php echo $row['countYes'] == $row['totalDepts'] ? 'Cleared' : 'Not Cleared'; ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($row['refundDate']); ?></td>
-                                <td><?php echo htmlspecialchars($row['refundDescription']); ?></td>
+                                <!-- <td><?php echo htmlspecialchars($row['refundDate']); ?></td>
+                                <td><?php echo htmlspecialchars($row['refundDescription']); ?></td> -->
+
                                 <td>
-                                    <?php if ($row['countYes'] == $row['totalDepts']): ?>
-                                        <button id="greenYes" onclick="openModal('<?php echo $row['requestId']; ?>', '<?php echo $row['filePath']; ?>')">Initiate Refund</button>
+                                    <?php if ($row['verifyDetails'] == 'Verified'): ?>
+                                        <span>Verified</span>
                                     <?php else: ?>
-                                        <button id="redNo">No Refund</button>
+                                        <form method="POST" action="processRefund.php">
+                                            <input type="hidden" name="requestId" value="<?php echo $row['requestId']; ?>">
+                                            <select name="verifyDetails" class="verifyDetails" onchange="toggleVerifyReason(this)">
+                                                <option value="selected">Select option</option>
+                                                <option value="Verified" <?php if ($row['verifyDetails'] == 'Verified') echo 'selected'; ?>>Verified</option>
+                                                <option value="Not Verified" <?php if ($row['verifyDetails'] == 'Not Verified' || $row['verifyDetails'] === NULL) echo 'selected'; ?>>Not Verified</option>
+                                            </select>
+                                            <?php if ($row['verifyDetails'] == 'Not Verified' && $row['verifyReason'] !== ''): ?>
+                                                <textarea name="verifyReason" class="verifyReason" id="verifyReason-<?php echo $row['requestId']; ?>" style="display: block;"><?php echo htmlspecialchars($row['verifyReason']); ?></textarea>
+                                            <?php elseif ($row['verifyDetails'] !== 'Verified' && $row['verifyReason'] !== ''): ?>
+                                                <textarea name="verifyReason" class="verifyReason" id="verifyReason-<?php echo $row['requestId']; ?>" style="display: block;"><?php echo htmlspecialchars($row['verifyReason']); ?></textarea>
+                                            <?php else: ?>
+                                                <textarea name="verifyReason" class="verifyReason" id="verifyReason-<?php echo $row['requestId']; ?>" style="display: none;"><?php echo htmlspecialchars($row['verifyReason']); ?></textarea>
+                                            <?php endif; ?>
+                                            <button type="submit" class="greenYes" name="submitVerify" onclick="submitVerifyForm(this)">Submit</button>
+                                        </form>
                                     <?php endif; ?>
                                 </td>
+
+                                <td>
+                                    <?php if ($row['verifyDetails'] === 'Verified'): ?>
+                                        <?php if ($row['countYes'] == $row['totalDepts']): ?>
+                                            <button class="greenYes" onclick="openModal('<?php echo $row['requestId']; ?>', '<?php echo $row['filePath']; ?>')">Initiate Refund</button>
+                                        <?php else: ?>
+                                            <button id="redNo">No Refund</button>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <button id="notVerified">
+                                            <?php echo $row['verifyDetails'] === 'Not Verified' || $row['verifyDetails'] === '' ? 'Account Not Verified' : ''; ?>
+                                        </button>
+                                    <?php endif; ?>
+                                </td>
+
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
+
                 </table>
             <?php else: ?>
                 <p id="noRecord">No records available for the selected filters.</p>
@@ -252,18 +310,32 @@ $result = $stmt->get_result();
             </form>
         </div>
     </div>
+
     <script>
         function openModal(requestId, filePath) {
             document.getElementById('requestId').value = requestId;
-            // Update the href of the link with the filePath
             var checkImageLink = document.getElementById('checkImage');
             checkImageLink.href = filePath;
-            checkImageLink.innerText = "View Uploaded Cheque"; // Update link text if needed
+            checkImageLink.innerText = "View Uploaded Cheque";
             document.getElementById('refundModal').style.display = 'block';
         }
 
         function closeModal() {
             document.getElementById('refundModal').style.display = 'none';
+        }
+
+        function toggleVerifyReason(select) {
+            var textarea = document.getElementById('verifyReason-' + select.form.requestId.value);
+            if (select.value === 'Not Verified') {
+                textarea.style.display = 'block';
+            } else {
+                textarea.style.display = 'none';
+            }
+        }
+
+        function submitVerifyForm(button) {
+            var form = button.form;
+            form.submit();
         }
     </script>
 

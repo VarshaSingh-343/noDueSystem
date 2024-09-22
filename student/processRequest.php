@@ -7,7 +7,6 @@ if (!isset($_SESSION['rollno'])) {
     exit();
 }
 
-// Set timezone to Indian Standard Time (IST)
 date_default_timezone_set('Asia/Kolkata');
 
 $rollNo = $_SESSION['rollno'];

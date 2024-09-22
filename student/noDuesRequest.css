@@ -29,7 +29,12 @@ button:hover {
     background-color: #6a1b9a;
 }
 
+#track{
+    margin-bottom: 10px;
+}
+
 #detailsForm {
+    margin-top: 10px;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 01, 2024 at 10:15 AM
+-- Generation Time: Sep 18, 2024 at 09:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -94,7 +94,11 @@ INSERT INTO `nodues` (`noDueId`, `requestId`, `deptId`, `noDueApproval`, `noDueC
 (29, 'REQmba04', 'D01', 'Yes', 'fee all cleared', '2024-08-28 11:52:56'),
 (30, 'REQmba04', 'D02', 'Yes', 'all dues cleared', '2024-08-28 11:54:00'),
 (31, 'REQmba04', 'D03', 'Yes', 'dues are cleared', '2024-08-28 11:57:31'),
-(32, 'REQmba04', 'D04', 'Yes', 'all documents are submitted', '2024-08-28 12:02:44');
+(32, 'REQmba04', 'D04', 'Yes', 'all documents are submitted', '2024-08-28 12:02:44'),
+(33, 'REQmca20', 'D01', 'No', NULL, NULL),
+(34, 'REQmca20', 'D02', 'No', NULL, NULL),
+(35, 'REQmca20', 'D03', 'No', NULL, NULL),
+(36, 'REQmca20', 'D04', 'No', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -123,6 +127,7 @@ INSERT INTO `refundrequest` (`requestId`, `rollNo`, `requestDate`, `refundDate`,
 ('REQmba06', 'mba06', '2024-08-22 23:37:14', NULL, NULL, 'No'),
 ('REQmca01', 'mca01', '2024-08-22 12:36:19', '2024-08-23 20:46:37', 'Your refund is initiated and amount will be transferred in 4-5 days.', 'Yes'),
 ('REQmca10', 'mca10', '2024-08-24 09:55:52', '2024-08-24 10:14:20', 'refund initiated and amount be transferred in 4,5 days.', 'Yes'),
+('REQmca20', 'mca20', '2024-09-19 01:03:57', NULL, NULL, 'No'),
 ('REQmca71', 'mca71', '2024-08-23 23:42:40', NULL, NULL, 'No');
 
 -- --------------------------------------------------------
@@ -174,22 +179,27 @@ INSERT INTO `student` (`batchSession`, `enrollmentNo`, `rollNo`, `Course`, `Name
 CREATE TABLE `uploadcheque` (
   `uploadId` int(11) NOT NULL,
   `rollNo` varchar(20) DEFAULT NULL,
-  `filePath` varchar(255) DEFAULT NULL
+  `filePath` varchar(255) DEFAULT NULL,
+  `accHolderName` varchar(100) DEFAULT NULL,
+  `bankName` varchar(100) DEFAULT NULL,
+  `accountNo` varchar(50) DEFAULT NULL,
+  `ifscCode` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `uploadcheque`
 --
 
-INSERT INTO `uploadcheque` (`uploadId`, `rollNo`, `filePath`) VALUES
-(1, 'mca01', '../admin/uploadFile/mca01_form.pdf'),
-(2, 'bba74', '../admin/uploadFile/bba74_form.pdf'),
-(3, 'bca55', '../admin/uploadFile/bca55_form.pdf'),
-(4, 'mba06', '../admin/uploadFile/mba06_form.pdf'),
-(5, 'mca71', '../admin/uploadFile/mca71_form.pdf'),
-(6, 'mca10', '../admin/uploadFile/mca10_tc.pdf'),
-(7, 'bcom07', '../admin/uploadFile/bcom07_tc.pdf'),
-(8, 'mba04', '../admin/uploadFile/mba04_5th Semester Result.pdf');
+INSERT INTO `uploadcheque` (`uploadId`, `rollNo`, `filePath`, `accHolderName`, `bankName`, `accountNo`, `ifscCode`) VALUES
+(1, 'mca01', '../admin/uploadFile/mca01_form.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(2, 'bba74', '../admin/uploadFile/bba74_form.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(3, 'bca55', '../admin/uploadFile/bca55_form.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(4, 'mba06', '../admin/uploadFile/mba06_form.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(5, 'mca71', '../admin/uploadFile/mca71_form.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(6, 'mca10', '../admin/uploadFile/mca10_tc.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(7, 'bcom07', '../admin/uploadFile/bcom07_mca 1.pdf', 'My Name', 'My Bank', '6534882345557', 'Bank00121'),
+(8, 'mba04', '../admin/uploadFile/mba04_5th Semester Result.pdf', 'my name', 'My Bank', '467882345557', 'Bank34355'),
+(9, 'mca20', '../admin/uploadFile/mca20_mca 1.pdf', 'sanjay kumar', 'SBI ', '409890344759', 'sbi4353');
 
 --
 -- Indexes for dumped tables
@@ -238,13 +248,13 @@ ALTER TABLE `uploadcheque`
 -- AUTO_INCREMENT for table `nodues`
 --
 ALTER TABLE `nodues`
-  MODIFY `noDueId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `noDueId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `uploadcheque`
 --
 ALTER TABLE `uploadcheque`
-  MODIFY `uploadId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `uploadId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
