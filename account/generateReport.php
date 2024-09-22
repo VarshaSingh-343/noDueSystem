@@ -1,66 +1,51 @@
 <?php
 session_start();
 include '../connect.php';
-require('../fpdf/fpdf.php');
 
-// Fetch the filter values from POST request, if any
-$selectedCourse = isset($_POST['course']) ? $_POST['course'] : '';
-$selectedBatch = isset($_POST['batchSession']) ? $_POST['batchSession'] : '';
-$selectedRefundStatus = isset($_POST['refundStatus']) ? $_POST['refundStatus'] : '';
-$selectedStartDate = isset($_POST['startDate']) ? $_POST['startDate'] : '';
-$selectedEndDate = isset($_POST['endDate']) ? $_POST['endDate'] : '';
-$selectedDepartmentDues = isset($_POST['departmentDues']) ? $_POST['departmentDues'] : '';
+$selectedCourse = $_POST['course'] ?? '';
+$selectedBatch = $_POST['batchSession'] ?? '';
+$selectedRefundStatus = $_POST['refundStatus'] ?? '';
+$selectedStartDate = $_POST['startDate'] ?? '';
+$selectedEndDate = $_POST['endDate'] ?? '';
+$selectedDepartmentDues = $_POST['departmentDues'] ?? '';
 
-// Initialize query components
 $conditions = [];
 $params = [];
 $paramTypes = '';
 
-// Build query conditions dynamically based on selected filters
-if (!empty($selectedCourse)) {
+if ($selectedCourse) {
     $conditions[] = "s.Course = ?";
     $params[] = $selectedCourse;
-    $paramTypes .= 's'; // 's' for string
+    $paramTypes .= 's';
 }
 
-if (!empty($selectedBatch)) {
+if ($selectedBatch) {
     $conditions[] = "s.batchSession = ?";
     $params[] = $selectedBatch;
     $paramTypes .= 's';
 }
 
-if (!empty($selectedRefundStatus)) {
+if ($selectedRefundStatus) {
     $conditions[] = "rr.refundStatus = ?";
     $params[] = $selectedRefundStatus;
     $paramTypes .= 's';
 }
 
-if (!empty($selectedStartDate)) {
+if ($selectedStartDate) {
     $conditions[] = "rr.requestDate >= ?";
     $params[] = $selectedStartDate;
     $paramTypes .= 's';
 }
 
-if (!empty($selectedEndDate)) {
+if ($selectedEndDate) {
     $conditions[] = "rr.requestDate <= ?";
     $params[] = $selectedEndDate;
     $paramTypes .= 's';
 }
 
-if (!empty($selectedDepartmentDues)) {
-    if ($selectedDepartmentDues == 'Cleared') {
-        $conditions[] = "(SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId AND n.noDueApproval = 'Yes') = 
-        (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId)";
-    } elseif ($selectedDepartmentDues == 'Not Cleared') {
-        $conditions[] = "(SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId AND n.noDueApproval = 'Yes') < 
-        (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId)";
-    }
-}
-
-$query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.securityAmount, rr.requestDate, rr.refundStatus, rr.refundDate, rr.refundDescription, rr.verifyDetails, rr.verifyReason,
-          (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId AND n.noDueApproval = 'Yes') as countYes,
-          (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId) as totalDepts,
-          uc.filePath, uc.accHolderName, uc.bankName, uc.accountNo, uc.ifscCode
+$query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.securityAmount, 
+          rr.requestDate, rr.refundStatus, rr.refundDate, rr.refundDescription, rr.verifyDetails, 
+          rr.verifyReason, uc.accHolderName, uc.bankName, uc.accountNo, uc.ifscCode
           FROM refundrequest rr
           JOIN student s ON rr.rollNo = s.rollNo
           LEFT JOIN uploadcheque uc ON s.rollNo = uc.rollNo";
@@ -73,44 +58,35 @@ $query .= " ORDER BY s.rollNo";
 
 $stmt = $conn->prepare($query);
 
-if (!empty($params)) {
+if ($params) {
     $stmt->bind_param($paramTypes, ...$params);
 }
 
 $stmt->execute();
 $result = $stmt->get_result();
 
-$pdf = new FPDF();
-$pdf->SetTitle('Refund Report');
-$pdf->AddPage(); // Set to landscape orientation
+header('Content-Type: text/csv');
+header('Content-Disposition: attachment; filename="refund_data.csv"');
+header('Pragma: no-cache');
+header('Expires: 0');
 
-// Set font and column headers
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->Cell(15, 10, 'Roll No', 1, 0, 'C');
-$pdf->Cell(30, 10, 'Name', 1, 0, 'C');
-$pdf->Cell(25, 10, 'Course', 1, 0, 'C');
-$pdf->Cell(30, 10, 'Account Holder', 1, 0, 'C'); 
-$pdf->Cell(30, 10, 'Bank Name', 1, 0, 'C'); 
-$pdf->Cell(30, 10, 'Account No', 1, 0, 'C');
-$pdf->Cell(25, 10, 'IFSC Code', 1, 0, 'C');
-$pdf->Cell(25, 10, 'Security Amt', 1, 1, 'C'); 
-
-// Set font for table rows
-$pdf->SetFont('Arial', '', 10);
+$output = fopen('php://output', 'w');
+fputcsv($output, ['Roll No', 'Name', 'Course', 'Batch', 'Account Holder', 'Bank Name', 'Account No', 'IFSC Code', 'Security Amount']);
 
 while ($row = $result->fetch_assoc()) {
-    $pdf->Cell(15, 10, $row['rollNo'], 1, 0, 'C'); 
-    $pdf->Cell(30, 10, $row['name'], 1, 0, 'C');
-    $pdf->Cell(25, 10, $row['course'], 1, 0, 'C');
-    $pdf->Cell(30, 10, $row['accHolderName'], 1, 0, 'C'); 
-    $pdf->Cell(30, 10, $row['bankName'], 1, 0, 'C'); 
-    $pdf->Cell(30, 10, $row['accountNo'], 1, 0, 'C');
-    $pdf->Cell(25, 10, $row['ifscCode'], 1, 0, 'C');
-    $pdf->Cell(25, 10, $row['securityAmount'], 1, 1, 'C'); 
+    fputcsv($output, [
+        $row['rollNo'],
+        $row['name'],
+        $row['course'],
+        $row['batchSession'],
+        $row['accHolderName'],
+        $row['bankName'],
+        '=TEXT(' . $row['accountNo'] . ',"0")',  // Format as text
+        $row['ifscCode'],
+        $row['securityAmount']
+    ]);
 }
 
-
-// Output PDF to browser
-$pdf->Output('I', 'Refund_Report.pdf');
+fclose($output);
 exit();
 ?>

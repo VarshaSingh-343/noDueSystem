@@ -274,9 +274,11 @@ $result = $stmt->get_result();
                                             <button id="redNo">No Refund</button>
                                         <?php endif; ?>
                                     <?php else: ?>
-                                        <button id="notVerified">
-                                            <?php echo $row['verifyDetails'] === 'Not Verified' || $row['verifyDetails'] === '' ? 'Account Not Verified' : ''; ?>
-                                        </button>
+                                        <?php if ($row['verifyDetails'] == 'selected' || (isset($_POST['verifyDetails']) && $_POST['verifyDetails'] == 'selected')): ?>
+                                            <button id="notVerified">No Action</button>
+                                        <?php else: ?>
+                                            <button id="notVerified"><?php echo $row['verifyDetails'] === 'Not Verified' || $row['verifyDetails'] === '' ? 'Account Not Verified' : ''; ?></button>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </td>
 

@@ -18,13 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $accountNo = $_POST['accountNo'] ?? '';
     $ifscCode = $_POST['ifscCode'] ?? '';
 
+    // Validate account number
+    if (!preg_match('/^\d{1,19}$/', $accountNo)) { // Adjusted for BIGINT
+        $_SESSION['error_message'] = "Invalid account number. It must be a numeric value up to 19 digits.";
+        header("Location: noDuesRequest.php");
+        exit();
+    }
+
     // Initialize file variables
     $file = $_FILES['file'] ?? null;
     $fileError = $file['error'] ?? 0;
     $fileName = $file['name'] ?? '';
     $fileTmpName = $file['tmp_name'] ?? '';
     $fileSize = $file['size'] ?? 0;
-    $fileType = $file['type'] ?? '';
     $allowed = ['pdf'];
     $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 

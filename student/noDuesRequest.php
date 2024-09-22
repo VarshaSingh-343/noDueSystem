@@ -123,7 +123,7 @@ $stmt->close();
 
                     <div class="form-item">
                         <label for="accountNo">Account Number:</label>
-                        <input type="text" name="accountNo" id="accountNo" value="<?php echo htmlspecialchars($accountNo); ?>">
+                        <input type="text" name="accountNo" id="accountNo" value="<?php echo htmlspecialchars($accountNo); ?>" required pattern="\d{5,20}" title="Account number must be numeric and between 5 and 18 digits.">
                     </div>
 
                     <div class="form-item">

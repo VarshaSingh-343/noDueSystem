@@ -178,7 +178,7 @@ $result = $stmt->get_result();
 
                 <button type="submit" id="filter" name="filter">Filter</button>
 
-                <button type="submit" name="generate_report" formaction="generateReport.php" formtarget="_blank">Generate Report</button>
+                <button type="submit" style="margin: 3px auto;" name="generate_report" formaction="generateReport.php" formtarget="_blank">Generate Report</button>
 
 
             </form>

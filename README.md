@@ -15,25 +15,28 @@ The **No Due System** is a web-based application designed to streamline the proc
   - View system-wide statistics and reports.
 ![Admin views the Student Details](images/view%20student.jpg)
 ![Admin views the Refund Details](images/refund%20details.jpg)
+![Admin manages the departments](images/department%20management.jpg)
 
 - **Account Panel:**
-![Account Dashboard](images/account%20dashboard.jpg)
   - View students' no due statuses.
+  ![Details of Refund initiation by Account](images/account%20refund%20initiation.jpg)
   - Initiate refunds for students who have cleared all dues.
-![Details Refund initiated by Account for students](images/requests%20approved.jpg)
+![Details of Refund initiated by Account of the students](images/account%20initiated%20refunds.jpg)
 
 - **Department Panel:**
 ![Department Dashboard](images/department%20dashboard.jpg)
   - Review and update the no due status for students within the department.
   - Provide comments and approve or deny no dues clearance.
 
+
 - **Student Panel:**
 ![Student Dashboard](images/student%20dashboard.jpg)
   - Submit no dues requests.
   - Upload required documents (e.g., canceled check for refunds).
+  ![Student no dues request](images/student%20request.jpg)
   - Track the status of no dues clearance across all departments.
-![Students track the status of their dues by Departments and Account](images/department%20dashboard.jpg)
-  - View and download clearance and refund statuses.
+  ![Student track the refund status](images/track%20dues.jpg)
+
 
 ## Installation
 
