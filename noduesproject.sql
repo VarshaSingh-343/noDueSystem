@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 01, 2024 at 10:15 AM
+-- Generation Time: Sep 22, 2024 at 09:36 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -40,7 +40,7 @@ CREATE TABLE `department` (
 INSERT INTO `department` (`deptId`, `deptName`, `deptPassword`) VALUES
 ('D01', 'Fee', 'Fee01'),
 ('D02', 'Library', 'Library02'),
-('D03', 'ComputerCenter', 'CompCenter03'),
+('D03', 'Computer Center', 'CompCenter03'),
 ('D04', 'Office', 'Office04');
 
 -- --------------------------------------------------------
@@ -71,16 +71,16 @@ INSERT INTO `nodues` (`noDueId`, `requestId`, `deptId`, `noDueApproval`, `noDueC
 (6, 'REQbba74', 'D02', 'Yes', 'approved', '2024-08-23 17:17:44'),
 (7, 'REQbba74', 'D03', 'Yes', 'approved', '2024-08-23 17:18:52'),
 (8, 'REQbba74', 'D04', 'Yes', 'dues cleared', '2024-08-24 00:01:18'),
-(9, 'REQbca55', 'D01', 'No', 'not deposited', '2024-08-22 23:37:59'),
+(9, 'REQbca55', 'D01', 'Yes', 'all fee deposited', '2024-09-21 09:18:51'),
 (10, 'REQbca55', 'D02', 'Yes', 'books deposited', '2024-08-30 11:54:33'),
 (11, 'REQbca55', 'D03', 'Yes', 'approved', '2024-08-25 22:00:28'),
-(12, 'REQbca55', 'D04', 'No', 'some documents not submitted', '2024-08-28 11:59:04'),
-(13, 'REQmba06', 'D01', 'No', NULL, NULL),
-(14, 'REQmba06', 'D02', 'No', '1 book not submitted', '2024-08-25 17:55:15'),
-(15, 'REQmba06', 'D03', 'No', NULL, NULL),
-(16, 'REQmba06', 'D04', 'No', NULL, NULL),
+(12, 'REQbca55', 'D04', 'Yes', 'all documents  submitted', '2024-09-21 09:19:35'),
+(13, 'REQmba06', 'D01', 'Yes', 'fee all cleared', '2024-09-19 01:14:12'),
+(14, 'REQmba06', 'D02', 'Yes', 'all book submitted', '2024-09-23 00:41:47'),
+(15, 'REQmba06', 'D03', 'Yes', 'nodues approved', '2024-09-23 00:43:58'),
+(16, 'REQmba06', 'D04', 'Yes', 'nodues cleared', '2024-09-23 00:44:33'),
 (17, 'REQmca71', 'D01', 'No', NULL, NULL),
-(18, 'REQmca71', 'D02', 'No', NULL, NULL),
+(18, 'REQmca71', 'D02', 'No', 'card not submitted', '2024-09-23 00:41:26'),
 (19, 'REQmca71', 'D03', 'No', NULL, NULL),
 (20, 'REQmca71', 'D04', 'No', NULL, NULL),
 (21, 'REQmca10', 'D01', 'Yes', 'approved', '2024-08-24 09:56:27'),
@@ -94,7 +94,15 @@ INSERT INTO `nodues` (`noDueId`, `requestId`, `deptId`, `noDueApproval`, `noDueC
 (29, 'REQmba04', 'D01', 'Yes', 'fee all cleared', '2024-08-28 11:52:56'),
 (30, 'REQmba04', 'D02', 'Yes', 'all dues cleared', '2024-08-28 11:54:00'),
 (31, 'REQmba04', 'D03', 'Yes', 'dues are cleared', '2024-08-28 11:57:31'),
-(32, 'REQmba04', 'D04', 'Yes', 'all documents are submitted', '2024-08-28 12:02:44');
+(32, 'REQmba04', 'D04', 'Yes', 'all documents are submitted', '2024-08-28 12:02:44'),
+(33, 'REQmca20', 'D01', 'No', NULL, NULL),
+(34, 'REQmca20', 'D02', 'No', NULL, NULL),
+(35, 'REQmca20', 'D03', 'No', NULL, NULL),
+(36, 'REQmca20', 'D04', 'No', NULL, NULL),
+(37, 'REQbca03', 'D01', 'No', NULL, NULL),
+(38, 'REQbca03', 'D02', 'No', NULL, NULL),
+(39, 'REQbca03', 'D03', 'No', NULL, NULL),
+(40, 'REQbca03', 'D04', 'No', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -108,22 +116,26 @@ CREATE TABLE `refundrequest` (
   `requestDate` datetime DEFAULT current_timestamp(),
   `refundDate` datetime DEFAULT NULL,
   `refundDescription` varchar(255) DEFAULT NULL,
-  `refundStatus` varchar(10) DEFAULT 'No'
+  `refundStatus` varchar(10) DEFAULT 'No',
+  `verifyDetails` varchar(255) DEFAULT NULL,
+  `verifyReason` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `refundrequest`
 --
 
-INSERT INTO `refundrequest` (`requestId`, `rollNo`, `requestDate`, `refundDate`, `refundDescription`, `refundStatus`) VALUES
-('REQbba74', 'bba74', '2024-08-22 12:37:10', '2024-08-24 21:09:10', 'refund to be processed in your bank account in 3,4 days.', 'Yes'),
-('REQbca55', 'bca55', '2024-08-22 22:58:56', NULL, NULL, 'No'),
-('REQbcom07', 'bcom07', '2024-08-25 17:21:36', NULL, NULL, 'No'),
-('REQmba04', 'mba04', '2024-08-27 10:08:23', NULL, NULL, 'No'),
-('REQmba06', 'mba06', '2024-08-22 23:37:14', NULL, NULL, 'No'),
-('REQmca01', 'mca01', '2024-08-22 12:36:19', '2024-08-23 20:46:37', 'Your refund is initiated and amount will be transferred in 4-5 days.', 'Yes'),
-('REQmca10', 'mca10', '2024-08-24 09:55:52', '2024-08-24 10:14:20', 'refund initiated and amount be transferred in 4,5 days.', 'Yes'),
-('REQmca71', 'mca71', '2024-08-23 23:42:40', NULL, NULL, 'No');
+INSERT INTO `refundrequest` (`requestId`, `rollNo`, `requestDate`, `refundDate`, `refundDescription`, `refundStatus`, `verifyDetails`, `verifyReason`) VALUES
+('REQbba74', 'bba74', '2024-08-22 12:37:10', '2024-08-24 21:09:10', 'refund to be processed in your bank account in 3,4 days.', 'Yes', 'Verified', ''),
+('REQbca03', 'bca03', '2024-09-22 17:39:59', NULL, NULL, 'No', 'Verified', ''),
+('REQbca55', 'bca55', '2024-08-22 22:58:56', '2024-09-21 09:36:28', 'security amount initiated', 'Yes', 'Verified', ''),
+('REQbcom07', 'bcom07', '2024-08-25 17:21:36', '2024-09-20 07:09:29', 'refund initiated ', 'Yes', 'Verified', ''),
+('REQmba04', 'mba04', '2024-08-27 10:08:23', '2024-09-22 14:05:32', 'refund is initiated', 'Yes', 'Verified', 'account number not matching'),
+('REQmba06', 'mba06', '2024-08-22 23:37:14', '2024-09-23 00:53:27', 'refund initiated', 'Yes', 'Verified', ''),
+('REQmca01', 'mca01', '2024-08-22 12:36:19', '2024-08-23 20:46:37', 'Your refund is initiated and amount will be transferred in 4-5 days.', 'Yes', 'Verified', ''),
+('REQmca10', 'mca10', '2024-08-24 09:55:52', '2024-08-24 10:14:20', 'refund initiated and amount be transferred in 4,5 days.', 'Yes', 'Verified', ''),
+('REQmca20', 'mca20', '2024-09-19 01:03:57', NULL, NULL, 'No', 'selected', ''),
+('REQmca71', 'mca71', '2024-08-23 23:42:40', NULL, NULL, 'No', 'Verified', '');
 
 -- --------------------------------------------------------
 
@@ -174,22 +186,28 @@ INSERT INTO `student` (`batchSession`, `enrollmentNo`, `rollNo`, `Course`, `Name
 CREATE TABLE `uploadcheque` (
   `uploadId` int(11) NOT NULL,
   `rollNo` varchar(20) DEFAULT NULL,
-  `filePath` varchar(255) DEFAULT NULL
+  `filePath` varchar(255) DEFAULT NULL,
+  `accHolderName` varchar(100) DEFAULT NULL,
+  `bankName` varchar(100) DEFAULT NULL,
+  `accountNo` bigint(30) DEFAULT NULL,
+  `ifscCode` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `uploadcheque`
 --
 
-INSERT INTO `uploadcheque` (`uploadId`, `rollNo`, `filePath`) VALUES
-(1, 'mca01', '../admin/uploadFile/mca01_form.pdf'),
-(2, 'bba74', '../admin/uploadFile/bba74_form.pdf'),
-(3, 'bca55', '../admin/uploadFile/bca55_form.pdf'),
-(4, 'mba06', '../admin/uploadFile/mba06_form.pdf'),
-(5, 'mca71', '../admin/uploadFile/mca71_form.pdf'),
-(6, 'mca10', '../admin/uploadFile/mca10_tc.pdf'),
-(7, 'bcom07', '../admin/uploadFile/bcom07_tc.pdf'),
-(8, 'mba04', '../admin/uploadFile/mba04_5th Semester Result.pdf');
+INSERT INTO `uploadcheque` (`uploadId`, `rollNo`, `filePath`, `accHolderName`, `bankName`, `accountNo`, `ifscCode`) VALUES
+(1, 'mca01', '../admin/uploadFile/mca01_form.pdf', 'my name', 'My Bank', 467882345557, 'Bank34355'),
+(2, 'bba74', '../admin/uploadFile/bba74_form.pdf', 'my name', 'My Bank', 467882345557, 'Bank34355'),
+(3, 'bca55', '../admin/uploadFile/bca55_form.pdf', 'my name', 'My Bank', 467882345557, 'Bank34355'),
+(4, 'mba06', '../admin/uploadFile/mba06_form.pdf', 'my name', 'My Bank', 467882345557, 'Bank34355'),
+(5, 'mca71', '../admin/uploadFile/mca71_form.pdf', 'my name', 'My Bank', 467882345557, 'Bank34355'),
+(6, 'mca10', '../admin/uploadFile/mca10_tc.pdf', 'my name', 'My Bank', 467882345557, 'Bank34355'),
+(7, 'bcom07', '../admin/uploadFile/bcom07_mca 1.pdf', 'My Name', 'My Bank', 6534882345557, 'Bank00121'),
+(8, 'mba04', '../admin/uploadFile/mba04_5th Semester Result.pdf', 'my name', 'My Bank', 9999900234, 'Bank34355'),
+(9, 'mca20', '../admin/uploadFile/mca20_mca 1.pdf', 'sanjay kumar', 'SBI ', 409890344759, 'sbi4353'),
+(10, 'bca03', '../admin/uploadFile/bca03_DBMS_LAB.pdf', 'Teena Sharma', 'Axis', 66952454545, 'axis11111');
 
 --
 -- Indexes for dumped tables
@@ -238,13 +256,13 @@ ALTER TABLE `uploadcheque`
 -- AUTO_INCREMENT for table `nodues`
 --
 ALTER TABLE `nodues`
-  MODIFY `noDueId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `noDueId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `uploadcheque`
 --
 ALTER TABLE `uploadcheque`
-  MODIFY `uploadId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `uploadId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables

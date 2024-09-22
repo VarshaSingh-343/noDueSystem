@@ -29,15 +29,28 @@ button:hover {
     background-color: #6a1b9a;
 }
 
-form {
+#track{
+    margin-bottom: 10px;
+}
+
+#detailsForm {
+    margin-top: 10px;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 7px;
     align-items: center;
-    /* margin-top: 5px; */
+    border: 1px solid rgb(45, 45, 45);
+    box-shadow: 0 4px 8px rgb(45, 45, 45);
+    margin-bottom: 15px;
+}
+
+.form-item{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
 }
 
 label {
@@ -45,19 +58,21 @@ label {
     font-weight: bold;
     color: #4A148C;
     display: block;
+    width: 300px;
+    text-align: center;
 }
 
-input[type="file"] {
-    padding: 8px;
+input[type="text"], input[type="file"]{
+    padding: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
-    width: 100%;
+    width: 40%;
 }
 
 .info {
     font-size: 12px;
-    margin: 10px;
+    margin: 7px;
 }
 
 .welcome-message {
@@ -74,5 +89,56 @@ main {
 }
 
 .message{
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.uploaded-cheque{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    /* gap: 10px; */
+}
+
+h2 {
+    text-align: center;
+}
+
+a{
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#updatecheque{
     margin-bottom: 10px;
+}
+
+table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+th {
+    background-color: #4A148C;
+    color: white;
+}
+
+.refund-info {
+    margin-top : 10px;
+    background-color: #f9f9f9;
+    padding: 5px 20px 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 60%;
+}
+
+.refund-info p {
+    margin: 10px 0;
 }
