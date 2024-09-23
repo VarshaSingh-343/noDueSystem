@@ -182,6 +182,15 @@ $result = $conn->query($sql);
         }
 
     </style>
+    <script>
+        function confirmEdit() {
+            return confirm("Are you sure you want to edit this department?");
+        }
+
+        function confirmAdd() {
+            return confirm("Are you sure you want to add this new department?");
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -214,7 +223,7 @@ $result = $conn->query($sql);
                             <td><input type="text" name="deptName" value="<?php echo $row['deptName']; ?>" required></td>
                             <td><input type="text" name="deptPassword" value="<?php echo $row['deptPassword']; ?>" required></td>
                             <td>
-                                <input id="submit1" type="submit" name="edit" value="Edit">
+                                <input id="submit1" type="submit" name="edit" value="Edit" onclick="return confirmEdit();">
                                 <input id="submit1" type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete this department?');">
                             </td>
                         </form>
@@ -231,7 +240,7 @@ $result = $conn->query($sql);
         <?php endif; ?>
 
         <div class="deptForm">
-            <form id="deptForm" action="departmentManagement.php" method="POST">
+            <form id="deptForm" action="departmentManagement.php" method="POST" onsubmit="return confirmAdd();">
                 <h2>Add New Department</h2>
                 <div class="form-item1">
                     <label for="deptId">Department ID:</label>
