@@ -30,13 +30,13 @@ if (isset($_POST['filter'])) {
         $conditions[] = "student.Course = ?";
         $params[] = $selectedCourse;
     }
-    
+
     if (!empty($_POST['batchSession'])) {
         $selectedBatch = $_POST['batchSession'];
         $conditions[] = "student.batchSession = ?";
         $params[] = $selectedBatch;
     }
-    
+
     if (!empty($_POST['refundStatus'])) {
         $selectedRefundStatus = $_POST['refundStatus'];
         $conditions[] = "refundrequest.refundStatus = ?";
@@ -48,7 +48,7 @@ if (isset($_POST['filter'])) {
         $conditions[] = "refundrequest.requestDate >= ?";
         $params[] = $selectedStartDate;
     }
-    
+
     if (!empty($_POST['endDate'])) {
         $selectedEndDate = $_POST['endDate'];
         $conditions[] = "refundrequest.requestDate <= ?";
@@ -123,25 +123,26 @@ while ($row = $result->fetch_assoc()) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View No Dues Details</title>
     <link rel="stylesheet" href="adminDashboard.css">
     <style>
-        .filter-group{
-            margin-top: 20px;
-            margin-bottom: 15px;
-        }
-        table{
+
+        table {
             width: 100%;
         }
+
         td {
             vertical-align: top;
         }
+
         .dept-status {
             font-weight: bold;
         }
+
         .dept-comment {
             margin-top: 5px;
             font-size: smaller;
@@ -149,6 +150,7 @@ while ($row = $result->fetch_assoc()) {
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -164,34 +166,40 @@ while ($row = $result->fetch_assoc()) {
 
         <div id="filterSection">
             <form method="POST" action="">
-                <label for="course">Filter by Course:</label>
-                <select name="course" id="course">
-                    <option value="">Select Course</option>
-                    <?php while ($courseRow = $courseResult->fetch_assoc()): ?>
-                        <option value="<?php echo htmlspecialchars($courseRow['Course']); ?>"
-                            <?php if ($selectedCourse == $courseRow['Course']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($courseRow['Course']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
+                <div class="filter-group">
+                    <label for="course">Filter by Course:</label>
+                    <select name="course" id="course">
+                        <option value="">Select Course</option>
+                        <?php while ($courseRow = $courseResult->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($courseRow['Course']); ?>"
+                                <?php if ($selectedCourse == $courseRow['Course']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($courseRow['Course']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
 
-                <label for="batchSession">Filter by Batch:</label>
-                <select name="batchSession" id="batchSession">
-                    <option value="">Select Batch</option>
-                    <?php while ($batchRow = $batchResult->fetch_assoc()): ?>
-                        <option value="<?php echo htmlspecialchars($batchRow['batchSession']); ?>"
-                            <?php if ($selectedBatch == $batchRow['batchSession']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($batchRow['batchSession']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
+                <div class="filter-group">
+                    <label for="batchSession">Filter by Batch:</label>
+                    <select name="batchSession" id="batchSession">
+                        <option value="">Select Batch</option>
+                        <?php while ($batchRow = $batchResult->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($batchRow['batchSession']); ?>"
+                                <?php if ($selectedBatch == $batchRow['batchSession']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($batchRow['batchSession']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
 
-                <label for="refundStatus">Filter by Refund Status:</label>
-                <select name="refundStatus" id="refundStatus">
-                    <option value="">Select Status</option>
-                    <option value="Yes" <?php if ($selectedRefundStatus == 'Yes') echo 'selected'; ?>>Refunded</option>
-                    <option value="No" <?php if ($selectedRefundStatus == 'No') echo 'selected'; ?>>Non Refunded</option>
-                </select>
+                <div class="filter-group">
+                    <label for="refundStatus">Filter by Refund Status:</label>
+                    <select name="refundStatus" id="refundStatus">
+                        <option value="">Select Status</option>
+                        <option value="Yes" <?php if ($selectedRefundStatus == 'Yes') echo 'selected'; ?>>Refunded</option>
+                        <option value="No" <?php if ($selectedRefundStatus == 'No') echo 'selected'; ?>>Non Refunded</option>
+                    </select>
+                </div>
 
                 <div class="filter-group">
                     <label for="startDate">Start Date:</label>
@@ -225,7 +233,7 @@ while ($row = $result->fetch_assoc()) {
                             <th>Roll No</th>
                             <th>Course</th>
                             <th>Request Date</th>
-                            <?php 
+                            <?php
                             if ($departmentResult = $conn->query("SELECT deptName FROM department")) {
                                 while ($deptRow = $departmentResult->fetch_assoc()) {
                                     echo "<th>{$deptRow['deptName']} Status & Comment</th>";
@@ -274,4 +282,5 @@ while ($row = $result->fetch_assoc()) {
         </div>
     </div>
 </body>
+
 </html>
