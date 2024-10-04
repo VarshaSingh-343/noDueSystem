@@ -72,7 +72,7 @@ if (isset($_POST['filter'])) {
 }
 
 // Base query with refund request and student data
-$query = "SELECT refundrequest.rollNo, student.Course, refundrequest.requestDate, refundrequest.refundStatus, 
+$query = "SELECT refundrequest.rollNo, student.Name, student.Course, refundrequest.requestDate, refundrequest.refundStatus, 
                  refundrequest.refundDate, refundrequest.refundDescription,
                  nodues.deptId, nodues.noDueApproval, nodues.noDueComment, department.deptName,
                  uploadcheque.filePath
@@ -103,6 +103,7 @@ while ($row = $result->fetch_assoc()) {
     $rollNo = $row['rollNo'];
     if (!isset($refundData[$rollNo])) {
         $refundData[$rollNo] = [
+            'Name' => $row['Name'],
             'rollNo' => $row['rollNo'],
             'Course' => $row['Course'],
             'requestDate' => $row['requestDate'],
@@ -221,6 +222,9 @@ while ($row = $result->fetch_assoc()) {
                 </div>
 
                 <button type="submit" id="filter" name="filter">Filter</button>
+
+                <button type="submit" style="margin: 3px auto;" name="generate_report" formaction="adminGenerateReport.php" formtarget="_blank">Generate Report</button>
+
             </form>
         </div>
 
@@ -231,6 +235,7 @@ while ($row = $result->fetch_assoc()) {
                     <thead>
                         <tr>
                             <th>Roll No</th>
+                            <th>Name</th>
                             <th>Course</th>
                             <th>Request Date</th>
                             <?php
@@ -250,6 +255,7 @@ while ($row = $result->fetch_assoc()) {
                         <?php foreach ($refundData as $rollNo => $data): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($data['rollNo']); ?></td>
+                                <td><?php echo htmlspecialchars($data['Name']); ?></td>
                                 <td><?php echo htmlspecialchars($data['Course']); ?></td>
                                 <td><?php echo htmlspecialchars($data['requestDate']); ?></td>
                                 <?php foreach ($data['departments'] as $deptName => $deptData): ?>

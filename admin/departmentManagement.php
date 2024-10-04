@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../connect.php'; 
+include '../connect.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: adminLogin.php");
@@ -77,19 +77,24 @@ $result = $conn->query($sql);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Department Management</title>
     <link rel="stylesheet" href="adminDashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
-        .container{
+        .container {
             justify-content: center;
             align-items: center;
         }
-        table{
-            width: 70%;
+
+        table {
+            width: 90%;
         }
+
         .message {
             width: 40%;
             text-align: center;
@@ -98,13 +103,17 @@ $result = $conn->query($sql);
             border-radius: 5px;
             border: 2px solid #f03e41;
         }
+
         .success {
             color: #08a820;
         }
+
         .error {
             color: #721c24;
         }
-        form, #deptForm{
+
+        form,
+        #deptForm {
             display: flex;
             flex-direction: column;
             gap: 5px;
@@ -113,10 +122,12 @@ $result = $conn->query($sql);
             align-items: center;
             flex-wrap: wrap;
         }
-        .form-item{
+
+        .form-item {
             display: flex;
             flex-direction: row;
         }
+
         input[type="text"] {
             padding: 7px;
             text-align: center;
@@ -132,28 +143,37 @@ $result = $conn->query($sql);
             outline: none;
         }
 
-        input[type="submit"] {
+        .submit1, #submit {
+            display: inline-flex;
+            align-items: center;
             padding: 7px 12px;
-            text-align: center;
             background-color: #40b858;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
+            font-size: 16px;
+            margin-right: 10px;
         }
 
-        #submit1:hover, #submit:hover {
+        .submit1 i {
+            margin-right: 5px;
+        }
+
+        .submit1:hover, #submit:hover {
             background-color: green;
             transform: scale(1.1);
         }
+
         label {
             font-size: 16px;
             margin: 10px 0 5px;
             color: #333;
             width: 150px;
         }
-        #deptForm{
+
+        #deptForm {
             padding: 0px 20px 20px 20px;
             margin: 0 auto;
             justify-content: center;
@@ -167,24 +187,26 @@ $result = $conn->query($sql);
             flex-direction: column;
             gap: 10px;
         }
-        .form-item1{
+
+        .form-item1 {
             display: flex;
             flex-direction: row;
             width: 80%;
         }
-        .form-item1 input{
+
+        .form-item1 input {
             text-align: left;
         }
-        #submit{
+
+        #submit {
             margin: 0 auto;
             margin-top: 15px;
             padding: 12px;
         }
-
     </style>
     <script>
         function confirmEdit() {
-            return confirm("Are you sure you want to edit this department?");
+            return confirm("Are you sure you want to update this department?");
         }
 
         function confirmAdd() {
@@ -192,6 +214,7 @@ $result = $conn->query($sql);
         }
     </script>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -223,9 +246,15 @@ $result = $conn->query($sql);
                             <td><input type="text" name="deptName" value="<?php echo $row['deptName']; ?>" required></td>
                             <td><input type="text" name="deptPassword" value="<?php echo $row['deptPassword']; ?>" required></td>
                             <td>
-                                <input id="submit1" type="submit" name="edit" value="Edit" onclick="return confirmEdit();">
-                                <input id="submit1" type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete this department?');">
+                                <button class="submit1" name ="edit" onclick="return confirmEdit();">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i> Update
+                                </button>
+
+                                <button class="submit1" name ="delete" onclick="return confirm('Are you sure you want to delete this department?');">
+                                    <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                                </button>
                             </td>
+
                         </form>
                     </tr>
                 <?php endwhile; ?>
@@ -236,7 +265,8 @@ $result = $conn->query($sql);
             <div class="message <?php echo $_SESSION['message_type']; ?>">
                 <?php echo $_SESSION['message']; ?>
             </div>
-            <?php unset($_SESSION['message']); unset($_SESSION['message_type']); ?>
+            <?php unset($_SESSION['message']);
+            unset($_SESSION['message_type']); ?>
         <?php endif; ?>
 
         <div class="deptForm">
@@ -259,7 +289,8 @@ $result = $conn->query($sql);
                 </div>
             </form>
         </div>
-        
+
     </div>
 </body>
+
 </html>
