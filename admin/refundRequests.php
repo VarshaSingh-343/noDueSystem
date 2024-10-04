@@ -203,12 +203,12 @@ while ($row = $result->fetch_assoc()) {
                 </div>
 
                 <div class="filter-group">
-                    <label for="startDate">Start Date:</label>
+                    <label for="startDate">Request Date From:</label>
                     <input type="date" name="startDate" id="startDate" value="<?php echo htmlspecialchars($selectedStartDate); ?>">
                 </div>
 
                 <div class="filter-group">
-                    <label for="endDate">End Date:</label>
+                    <label for="endDate">To:</label>
                     <input type="date" name="endDate" id="endDate" value="<?php echo htmlspecialchars($selectedEndDate); ?>">
                 </div>
 

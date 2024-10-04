@@ -163,20 +163,6 @@ h3{
     flex-wrap: wrap;
 }
 
-#filterSection label {
-    font-weight: bold;
-    color: black;
-    padding-left: 20px;
-}
-
-#filterSection select {
-    padding: 4px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 130px;
-    align-items: center;
-}
-
 #filterSection button {
     margin-left: 25px; 
     padding: 7px 12px;  
@@ -193,9 +179,27 @@ h3{
     color: white;
 }
 
-.filter-group{
-    margin: 8px ;
+.filter-group {
+    display: flex; 
+    align-items: center; 
+    margin: 8px;
 }
+
+.filter-group label {
+    font-weight: bold;
+    color: black;
+    padding-left: 20px; 
+    margin-right: 4px;
+}
+
+.filter-group select {
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 130px;
+    align-items: center;
+}
+
 
 
 

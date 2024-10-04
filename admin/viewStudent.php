@@ -23,18 +23,17 @@ $refundConditions = [];
 $refundParams = [];
 $refundParamTypes = '';
 
-$showStudentTable = true;  // Default to show the student table
+$showStudentTable = true;
 $showRefundTable = false;
 $studentResult = null;
 
 if (isset($_POST['filter'])) {
-    // Process student filters
     if (!empty($_POST['course'])) {
         $selectedCourse = $_POST['course'];
         $studentConditions[] = "Course = ?";
         $studentParams[] = $selectedCourse;
         $studentParamTypes .= 's';
-        $showRefundTable = false;  // Initially set to false; will only be true if refund filters are used
+        $showRefundTable = false;
     }
 
     if (!empty($_POST['batchSession'])) {
@@ -42,13 +41,12 @@ if (isset($_POST['filter'])) {
         $studentConditions[] = "batchSession = ?";
         $studentParams[] = $selectedBatch;
         $studentParamTypes .= 's';
-        $showRefundTable = false;  // Initially set to false; will only be true if refund filters are used
+        $showRefundTable = false;
     }
 
-    // Process refund filters
     if (!empty($_POST['refundRequest']) || !empty($_POST['refundStatus'])) {
-        $showRefundTable = true;  // Set to true because refund filters are being used
-        $showStudentTable = false;  // Do not show student table when refund filters are applied
+        $showRefundTable = true;
+        $showStudentTable = false;
 
         if (!empty($_POST['refundRequest'])) {
             $refundRequest = $_POST['refundRequest'];
@@ -80,17 +78,14 @@ if (isset($_POST['filter'])) {
             LEFT JOIN refundrequest ON student.rollNo = refundrequest.rollNo
             WHERE 1=1";
 
-        // Add student filters if any
         if (!empty($studentConditions)) {
             $refundQuery .= " AND " . implode(" AND ", $studentConditions);
         }
 
-        // Add refund filters if any
         if (!empty($refundConditions)) {
             $refundQuery .= " AND " . implode(" AND ", $refundConditions);
         }
 
-        // Prepare and execute the refund query
         $refundStmt = $conn->prepare($refundQuery);
         if ($refundStmt) {
             if (!empty($studentParams)) {
@@ -104,13 +99,11 @@ if (isset($_POST['filter'])) {
     }
 }
 
-// Build the default student query
 $studentQuery = "SELECT * FROM student";
 if (!empty($studentConditions)) {
     $studentQuery .= " WHERE " . implode(" AND ", $studentConditions);
 }
 
-// Prepare and execute the student query only if refund table is not shown
 if (!$showRefundTable) {
     $studentStmt = $conn->prepare($studentQuery);
     if ($studentStmt) {
@@ -135,7 +128,7 @@ if (!$showRefundTable) {
     <title>View Student Data</title>
     <link rel="stylesheet" href="adminDashboard.css">
     <style>
-        p{
+        p {
             text-align: center;
         }
     </style>
@@ -160,45 +153,49 @@ if (!$showRefundTable) {
 
         <div id="filterSection">
             <form method="POST" action="">
-                <label for="course">Filter Course:</label>
-                <select name="course" id="course">
-                    <option value="">Select Course</option>
-                    <?php while ($courseRow = $courseResult->fetch_assoc()): ?>
-                        <option value="<?php echo htmlspecialchars($courseRow['Course']); ?>"
-                            <?php if (isset($_POST['course']) && $_POST['course'] == $courseRow['Course']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($courseRow['Course']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
+                <div class="filter-group">
+                    <label for="course">Filter Course:</label>
+                    <select name="course" id="course">
+                        <option value="">Select Course</option>
+                        <?php while ($courseRow = $courseResult->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($courseRow['Course']); ?>"
+                                <?php if (isset($_POST['course']) && $_POST['course'] == $courseRow['Course']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($courseRow['Course']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
 
-                <label for="batchSession">Filter Batch:</label>
-                <select name="batchSession" id="batchSession">
-                    <option value="">Select Batch</option>
-                    <?php while ($batchRow = $batchResult->fetch_assoc()): ?>
-                        <option value="<?php echo htmlspecialchars($batchRow['batchSession']); ?>"
-                            <?php if (isset($_POST['batchSession']) && $_POST['batchSession'] == $batchRow['batchSession']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($batchRow['batchSession']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
+                <div class="filter-group">
+                    <label for="batchSession">Filter Batch:</label>
+                    <select name="batchSession" id="batchSession">
+                        <option value="">Select Batch</option>
+                        <?php while ($batchRow = $batchResult->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($batchRow['batchSession']); ?>"
+                                <?php if (isset($_POST['batchSession']) && $_POST['batchSession'] == $batchRow['batchSession']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($batchRow['batchSession']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
 
-                <br>
+                <div class="filter-group">
+                    <label for="refundRequest">Refund Request:</label>
+                    <select name="refundRequest" id="refundRequest">
+                        <option value="">Select Option</option>
+                        <option value="Requested" <?php if (isset($_POST['refundRequest']) && $_POST['refundRequest'] == 'Requested') echo 'selected'; ?>>Requested</option>
+                        <option value="Non Requested" <?php if (isset($_POST['refundRequest']) && $_POST['refundRequest'] == 'Non Requested') echo 'selected'; ?>>Non Requested</option>
+                    </select>
+                </div>
 
-                <!-- Add Refund Request Filter -->
-                <label for="refundRequest">Refund Request:</label>
-                <select name="refundRequest" id="refundRequest">
-                    <option value="">Select Status</option>
-                    <option value="Requested" <?php if (isset($_POST['refundRequest']) && $_POST['refundRequest'] == 'Requested') echo 'selected'; ?>>Requested</option>
-                    <option value="Non Requested" <?php if (isset($_POST['refundRequest']) && $_POST['refundRequest'] == 'Non Requested') echo 'selected'; ?>>Non Requested</option>
-                </select>
-
-                <!-- Add Refund Status Filter -->
-                <label for="refundStatus">Refund Status:</label>
-                <select name="refundStatus" id="refundStatus">
-                    <option value="">Select Status</option>
-                    <option value="Refunded" <?php if (isset($_POST['refundStatus']) && $_POST['refundStatus'] == 'Refunded') echo 'selected'; ?>>Refunded</option>
-                    <option value="Non Refunded" <?php if (isset($_POST['refundStatus']) && $_POST['refundStatus'] == 'Non Refunded') echo 'selected'; ?>>Non Refunded</option>
-                </select>
+                <div class="filter-group">
+                    <label for="refundStatus">Refund Status:</label>
+                    <select name="refundStatus" id="refundStatus">
+                        <option value="">Select Status</option>
+                        <option value="Refunded" <?php if (isset($_POST['refundStatus']) && $_POST['refundStatus'] == 'Refunded') echo 'selected'; ?>>Refunded</option>
+                        <option value="Non Refunded" <?php if (isset($_POST['refundStatus']) && $_POST['refundStatus'] == 'Non Refunded') echo 'selected'; ?>>Non Refunded</option>
+                    </select>
+                </div>
 
                 <button type="submit" id="filter" name="filter">Filter</button>
             </form>
