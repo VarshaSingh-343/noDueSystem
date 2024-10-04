@@ -63,6 +63,8 @@
             <li>|</li>
             <li><a href="viewStudent.php" class="nav-link">Students Details</a></li>
             <li>|</li>
+            <li><a href="refundRequests.php" class="nav-link">No Dues Details</a></li>
+            <li>|</li>
             <li><a href="departmentManagement.php" class="nav-link">Department Management</a></li>
             <li>|</li>
             <li><a href="adminLogout.php" class="nav-link">Logout</a></li>

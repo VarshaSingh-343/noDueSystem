@@ -126,7 +126,7 @@ while ($row = $result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Refund Requests</title>
+    <title>View No Dues Details</title>
     <link rel="stylesheet" href="adminDashboard.css">
     <style>
         .filter-group{
