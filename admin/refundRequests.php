@@ -58,12 +58,10 @@ if (isset($_POST['filter'])) {
     if (!empty($_POST['departmentDues'])) {
         $selectedDepartmentDues = $_POST['departmentDues'];
         if ($selectedDepartmentDues == 'Cleared') {
-            // All departments must have cleared dues (i.e., noDueApproval = 'Yes')
             $conditions[] = "NOT EXISTS (
                 SELECT 1 FROM nodues n WHERE n.requestId = refundrequest.requestId AND n.noDueApproval = 'No'
             )";
         } elseif ($selectedDepartmentDues == 'Not Cleared') {
-            // At least one department must not have cleared dues (i.e., noDueApproval = 'No')
             $conditions[] = "EXISTS (
                 SELECT 1 FROM nodues n WHERE n.requestId = refundrequest.requestId AND n.noDueApproval = 'No'
             )";
@@ -71,7 +69,6 @@ if (isset($_POST['filter'])) {
     }
 }
 
-// Base query with refund request and student data
 $query = "SELECT refundrequest.rollNo, student.Name, student.Course, refundrequest.requestDate, refundrequest.refundStatus, 
                  refundrequest.refundDate, refundrequest.refundDescription,
                  nodues.deptId, nodues.noDueApproval, nodues.noDueComment, department.deptName,

@@ -152,13 +152,17 @@ if (!$result) {
 
         <main>
             <?php if (isset($_SESSION['success_message'])): ?>
-                <div class="message success"><?php echo $_SESSION['success_message'];
-                                                unset($_SESSION['success_message']); ?></div>
+                <script>
+                    alert("<?php echo $_SESSION['success_message']; ?>");
+                </script>
+                <?php unset($_SESSION['success_message']); ?>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['error_message'])): ?>
-                <div class="message error"><?php echo $_SESSION['error_message'];
-                                            unset($_SESSION['error_message']); ?></div>
+                <script>
+                    alert("<?php echo $_SESSION['error_message']; ?>");
+                </script>
+                <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
 
             <div id="filterSection">
@@ -244,8 +248,8 @@ if (!$result) {
                                         <?php if ($row['noDueApproval'] === 'Yes'): ?>
                                             <span>Cleared</span>
                                         <?php else: ?>
-                                            <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="Yes" required <?php echo ($row['noDueApproval'] === 'Yes') ? 'checked' : ''; ?>> Yes
-                                            <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="No" required <?php echo ($row['noDueApproval'] === 'No') ? 'checked' : ''; ?>> No
+                                            <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="Yes" required <?php echo ($row['noDueApproval'] === 'Yes') ? 'checked' : ''; ?>> Cleared
+                                            <input type="radio" name="noDueApproval[<?php echo htmlspecialchars($row['requestId']); ?>]" value="No" required <?php echo ($row['noDueApproval'] === 'No') ? 'checked' : ''; ?>> Not Cleared
                                         <?php endif; ?>
                                     </td>
 

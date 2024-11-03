@@ -43,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $fileDestination = '../admin/uploadFile/' . $fileNameNew;
 
                     if (move_uploaded_file($fileTmpName, $fileDestination)) {
-                        // Check if the cheque already exists
                         $checkChequeQuery = "SELECT * FROM uploadcheque WHERE rollNo = ?";
                         $stmt = $conn->prepare($checkChequeQuery);
                         $stmt->bind_param("s", $rollNo);
@@ -51,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $chequeResult = $stmt->get_result();
 
                         if ($chequeResult->num_rows > 0) {
-                            // Update existing cheque record with new data
                             $updateChequeQuery = "UPDATE uploadcheque SET filePath = ?, accHolderName = ?, bankName = ?, accountNo = ?, ifscCode = ? WHERE rollNo = ?";
                             $stmt = $conn->prepare($updateChequeQuery);
                             $stmt->bind_param("ssssss", $fileDestination, $accHolderName, $bankName, $accountNo, $ifscCode, $rollNo);
@@ -63,14 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 $_SESSION['error_message'] = "No changes were made to the cheque information.";
                             }
                         } else {
-                            // Insert new cheque record
                             $insertChequeQuery = "INSERT INTO uploadcheque (rollNo, filePath, accHolderName, bankName, accountNo, ifscCode) VALUES (?, ?, ?, ?, ?, ?)";
                             $stmt = $conn->prepare($insertChequeQuery);
                             $stmt->bind_param("ssssss", $rollNo, $fileDestination, $accHolderName, $bankName, $accountNo, $ifscCode);
                             $stmt->execute();
 
                             if ($stmt->affected_rows > 0) {
-                                // Insert into refundrequest table if not already present
                                 $checkRequestQuery = "SELECT * FROM refundrequest WHERE rollNo = ?";
                                 $stmt = $conn->prepare($checkRequestQuery);
                                 $stmt->bind_param("s", $rollNo);
@@ -79,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                                 if ($requestResult->num_rows == 0) {
                                     $requestId = 'REQ' . $rollNo;
-                                    $requestDate = date('Y-m-d H:i:s');  // Current datetime in IST
+                                    $requestDate = date('Y-m-d H:i:s');  
 
                                     $insertRefundQuery = "INSERT INTO refundrequest (requestId, rollNo, requestDate) VALUES (?, ?, ?)";
                                     $stmt = $conn->prepare($insertRefundQuery);

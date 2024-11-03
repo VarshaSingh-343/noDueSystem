@@ -35,13 +35,13 @@ $username = $_SESSION['username'];
             <?php include 'accountNav.php'; ?>
         </header>
         <main>
-            <?php if (isset($_SESSION['success_message'])): ?>
+            <!-- <?php if (isset($_SESSION['success_message'])): ?>
                 <div class="message"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
             <?php endif; ?>
             
             <?php if (isset($_SESSION['error_message'])): ?>
                 <div class="error-message"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
-            <?php endif; ?>
+            <?php endif; ?> -->
 
             <div class = "button">
                 <button class="toggle-btn" onclick="window.location.href='viewRefundRequests.php'">Students No Dues Refund Requests </button>

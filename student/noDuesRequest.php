@@ -24,6 +24,7 @@ if ($result->num_rows > 0) {
     $requestSubmitted = true;
     $row = $result->fetch_assoc();
     $refundStatus = $row['refundStatus'];
+    $verifyDetails = $row['verifyDetails']; 
 }
 
 // Check if the student has uploaded a cheque
@@ -103,12 +104,12 @@ $stmt->close();
             <?php endif; ?>
 
             <?php if ($requestSubmitted): ?>
-                    <form action="trackStatus.php" method="get">
-                        <button type="submit" id="track">Track Refund Status</button>
-                    </form>
+                <form action="trackStatus.php" method="get">
+                    <button type="submit" id="track">Track Refund Status</button>
+                </form>
             <?php endif; ?>
 
-            <?php if ($refundStatus !== 'Yes'): ?>
+            <?php if ($verifyDetails !== 'Verified'): ?>
                 <form action="processRequest.php" method="post" enctype="multipart/form-data" id="detailsForm">
                     <h2>Upload/Update your Account Details</h2>
                     <div class="form-item">
@@ -144,7 +145,7 @@ $stmt->close();
                     <button id="updatecheque" type="submit"><?php echo $buttonText; ?></button>
                 </form>
 
-                
+
 
                 <?php if ($uploadedCheque): ?>
                     <div class="uploaded-cheque">
