@@ -46,7 +46,7 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Refund Status</title>
-    <link rel="stylesheet" href="noDuesRequest.css">
+    <link rel="stylesheet" href="../css/noDuesRequest.css">
     <style>
         /* Your custom styles */
     </style>

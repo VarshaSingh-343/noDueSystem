@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 include '../connect.php';
 
@@ -126,7 +127,8 @@ if (!$showRefundTable) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Student Data</title>
-    <link rel="stylesheet" href="adminDashboard.css">
+    <link rel="stylesheet" href="../css/adminDashboard.css">
+    <link rel="stylesheet" href="../css/noduesproject.css">
     <style>
         p {
             text-align: center;

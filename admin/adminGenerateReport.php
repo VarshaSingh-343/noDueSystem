@@ -71,6 +71,13 @@ header('Pragma: no-cache');
 header('Expires: 0');
 
 $output = fopen('php://output', 'w');
+
+$title = "No Dues Report - " . date("d-m-Y");
+fputcsv($output, [$title]);
+
+// Add an empty row for spacing
+fputcsv($output, []);
+
 fputcsv($output, ['Roll No', 'Name', 'Course', 'Batch', 'Account Holder', 'Bank Name', 'Account No', 'IFSC Code', 'Security Amount']);
 
 while ($row = $result->fetch_assoc()) {

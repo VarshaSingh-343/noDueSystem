@@ -61,10 +61,10 @@ $stmt->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>No Dues Request</title>
-    <link rel="stylesheet" href="noDuesRequest.css">
+    <link rel="stylesheet" href="../css/noDuesRequest.css">
     <style>
         .faded {
-            opacity: 0.5;
+            opacity: 0.3;
             pointer-events: none;
         }
 

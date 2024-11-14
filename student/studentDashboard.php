@@ -23,7 +23,7 @@ $student = $result->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <link rel="stylesheet" href="studentDashboard.css">
+    <link rel="stylesheet" href="../css/studentDashboard.css">
 </head>
 <body>
     <div class="container">

@@ -1,0 +1,116 @@
+/* common.css */
+body {
+    font-family: cursive;
+    color: black;
+    background-color: #f4f4f4;
+    margin: 15px 0;
+    padding: 0;
+}
+
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    margin: 0 auto;
+}
+
+.welcome-message {
+    font-size: 18px;
+    color: #333;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    text-align: center;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+th {
+    background-color: #4A148C;
+    color: white;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #8d51d7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #4e067b;
+    font-weight: bold;
+}
+
+#filterSection {
+    display: flex;
+    flex-direction: row;
+    background-color: #eae7eb;
+    padding: 5px 15px;
+    text-align: center;
+    justify-content: left;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px #d4d2d4;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#filterSection form {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    text-align: center;
+    justify-content: left;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#filterSection button {
+    margin-left: 25px;
+    padding: 7px 12px;
+    background-color: #8a60eb;
+    border: none;
+    font-weight: bold;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+#filterSection button:hover {
+    background-color: #4a2996;
+    color: white;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    margin: 8px;
+}
+
+.filter-group label {
+    font-weight: bold;
+    color: black;
+    padding-left: 20px;
+    margin-right: 4px;
+}
+
+.filter-group select {
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 130px;
+    align-items: center;
+}
