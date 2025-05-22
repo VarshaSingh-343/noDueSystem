@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("sss", $verifyDetails, $verifyReason, $requestId);
 
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Verification updated successfully!";
+            $_SESSION['success_message'] = "Account Verification updated successfully!";
         } else {
             $_SESSION['error_message'] = "Failed to update verification details. Please try again.";
         }

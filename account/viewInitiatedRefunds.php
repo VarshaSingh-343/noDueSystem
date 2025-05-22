@@ -104,7 +104,8 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Refund Requests</title>
-    <link rel="stylesheet" href="accountDashboard.css">
+    <link rel="stylesheet" href="../css/noduesproject.css">
+    <link rel="stylesheet" href="../css/accountDashboard.css">
 </head>
 
 <body>
@@ -180,7 +181,7 @@ $result = $stmt->get_result();
 
                 <button type="submit" style="margin: 3px auto;" name="generate_report" formaction="generateReport.php" formtarget="_blank">Generate Report</button>
 
-
+                
             </form>
         </div>
 

@@ -17,7 +17,8 @@ $username = $_SESSION['username'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Dashboard</title>
-    <link rel="stylesheet" href="accountDashboard.css">
+    <link rel="stylesheet" href="../css/noduesproject.css">
+    <link rel="stylesheet" href="../css/accountDashboard.css">
     <style>
         
     </style>
@@ -35,13 +36,13 @@ $username = $_SESSION['username'];
             <?php include 'accountNav.php'; ?>
         </header>
         <main>
-            <?php if (isset($_SESSION['success_message'])): ?>
+            <!-- <?php if (isset($_SESSION['success_message'])): ?>
                 <div class="message"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
             <?php endif; ?>
             
             <?php if (isset($_SESSION['error_message'])): ?>
                 <div class="error-message"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
-            <?php endif; ?>
+            <?php endif; ?> -->
 
             <div class = "button">
                 <button class="toggle-btn" onclick="window.location.href='viewRefundRequests.php'">Students No Dues Refund Requests </button>

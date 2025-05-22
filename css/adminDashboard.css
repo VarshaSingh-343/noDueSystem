@@ -1,0 +1,68 @@
+/* adminDashboard.css */
+
+.header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+h2 {
+    text-align: center;
+}
+
+.importButton {
+    text-align: right;
+    margin-right: 30px;
+    margin: 20px;
+}
+
+.box {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    padding: 20px 50px;
+}
+
+.box-item {
+    background-color: #bfa7dd;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px #bfa7dd;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 35%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.box-item:hover {
+    transform: scale(1.05);
+    background-color: #f0f0f0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.box-h3, .box-p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    padding: 10px;
+}
+
+.box-h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4A148C;
+    width: 300px;
+}
+
+.box-p {
+    font-size: 2rem;
+    color: #ffffff;
+    font-weight: 700;
+}

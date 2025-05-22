@@ -46,7 +46,7 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Refund Status</title>
-    <link rel="stylesheet" href="noDuesRequest.css">
+    <link rel="stylesheet" href="../css/noDuesRequest.css">
     <style>
         /* Your custom styles */
     </style>
@@ -112,6 +112,8 @@ $result = $stmt->get_result();
                         <?php elseif ($verifyDetails == 'Not Verified'): ?>
                             <span>Your Account Details are Not Verified</span>
                     <p><strong>Reason for Not Verifed Account Details:</strong> <?php echo htmlspecialchars($verifyReason); ?></p>
+                    <?php else: ?>
+                        <span>Your Account Details are Not Verified Yet</span>
                 <?php endif; ?>
                 </p>
                 <p><strong>Refund Status:</strong>

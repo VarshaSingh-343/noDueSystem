@@ -72,12 +72,12 @@ header('Expires: 0');
 
 $output = fopen('php://output', 'w');
 
-// Add the heading with the current date
-$currentDate = date("d-m-Y");
-fputcsv($output, ["Refund Report - $currentDate"]);
-fputcsv($output, []);  // Blank line for readability
+$title = "No Dues Report - " . date("d-m-Y");
+fputcsv($output, [$title]);
 
-// Add column headers
+// Add an empty row for spacing
+fputcsv($output, []);
+
 fputcsv($output, ['Roll No', 'Name', 'Course', 'Batch', 'Account Holder', 'Bank Name', 'Account No', 'IFSC Code', 'Security Amount']);
 
 while ($row = $result->fetch_assoc()) {
@@ -88,7 +88,7 @@ while ($row = $result->fetch_assoc()) {
         $row['batchSession'],
         $row['accHolderName'],
         $row['bankName'],
-        '=TEXT(' . $row['accountNo'] . ',"0")',
+        '=TEXT(' . $row['accountNo'] . ',"0")',  // Format as text
         $row['ifscCode'],
         $row['securityAmount']
     ]);

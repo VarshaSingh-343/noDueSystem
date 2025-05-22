@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 23, 2024 at 06:48 AM
+-- Generation Time: Nov 14, 2024 at 06:06 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -38,10 +38,10 @@ CREATE TABLE `department` (
 --
 
 INSERT INTO `department` (`deptId`, `deptName`, `deptPassword`) VALUES
-('D01', 'Fee', 'Fee01'),
-('D02', 'Library', 'Library02'),
-('D03', 'Computer Center', 'CompCenter03'),
-('D04', 'Office', 'Office04');
+('D01', 'Fee', '$2y$10$eHJGQjfmpeE9C5IZLK9ktuVdKAuqPgFc74mSdCZ4QTioP0UQXVFj.'),
+('D02', 'Library', '$2y$10$U1P4.dNUgJXD9iFQJB2ot.Jfjuwik2UY0ET6jHS4raHj/rpEO/Be2'),
+('D03', 'Computer Center', '$2y$10$K.ZWjDHfnW1udkg5mpIScOf.Lk11OG.023b1UigG.SeTJLx7RBx1O'),
+('D04', 'Office', '$2y$10$OvFsyPVza.Oj.EabWyUKEuZB42NWstw6uBgM6iwnmOg7LumbiD2rG');
 
 -- --------------------------------------------------------
 
@@ -79,7 +79,7 @@ INSERT INTO `nodues` (`noDueId`, `requestId`, `deptId`, `noDueApproval`, `noDueC
 (14, 'REQmba06', 'D02', 'Yes', 'all book submitted', '2024-09-23 00:41:47'),
 (15, 'REQmba06', 'D03', 'Yes', 'nodues approved', '2024-09-23 00:43:58'),
 (16, 'REQmba06', 'D04', 'Yes', 'nodues cleared', '2024-09-23 00:44:33'),
-(17, 'REQmca71', 'D01', 'No', NULL, NULL),
+(17, 'REQmca71', 'D01', 'Yes', 'dues cleared', '2024-11-04 01:20:27'),
 (18, 'REQmca71', 'D02', 'No', 'card not submitted', '2024-09-23 00:41:26'),
 (19, 'REQmca71', 'D03', 'No', NULL, NULL),
 (20, 'REQmca71', 'D04', 'No', NULL, NULL),
@@ -95,22 +95,30 @@ INSERT INTO `nodues` (`noDueId`, `requestId`, `deptId`, `noDueApproval`, `noDueC
 (30, 'REQmba04', 'D02', 'Yes', 'all dues cleared', '2024-08-28 11:54:00'),
 (31, 'REQmba04', 'D03', 'Yes', 'dues are cleared', '2024-08-28 11:57:31'),
 (32, 'REQmba04', 'D04', 'Yes', 'all documents are submitted', '2024-08-28 12:02:44'),
-(33, 'REQmca20', 'D01', 'No', NULL, NULL),
+(33, 'REQmca20', 'D01', 'No', 'not cleared', '2024-10-16 02:20:55'),
 (34, 'REQmca20', 'D02', 'No', NULL, NULL),
-(35, 'REQmca20', 'D03', 'No', NULL, NULL),
+(35, 'REQmca20', 'D03', 'No', 'tc not submitted', '2024-10-07 22:32:19'),
 (36, 'REQmca20', 'D04', 'No', 'some documents not submitted', '2024-09-23 10:15:40'),
-(37, 'REQbca03', 'D01', 'No', NULL, NULL),
-(38, 'REQbca03', 'D02', 'No', NULL, NULL),
+(37, 'REQbca03', 'D01', 'Yes', 'all dues cleared', '2024-10-16 02:17:55'),
+(38, 'REQbca03', 'D02', 'No', 'book not submitted', '2024-10-08 03:16:15'),
 (39, 'REQbca03', 'D03', 'No', 'dues not clear', '2024-09-23 10:14:56'),
-(40, 'REQbca03', 'D04', 'No', NULL, NULL),
+(40, 'REQbca03', 'D04', 'Yes', 'dues all cleared', '2024-11-04 01:18:13'),
 (41, 'REQbba014', 'D01', 'Yes', 'no dues approved', '2024-09-23 10:14:00'),
 (42, 'REQbba014', 'D02', 'Yes', 'cleared all no dues', '2024-09-23 10:14:31'),
 (43, 'REQbba014', 'D03', 'Yes', 'dues clear', '2024-09-23 10:15:15'),
 (44, 'REQbba014', 'D04', 'Yes', 'no dues approved', '2024-09-23 10:15:50'),
-(45, 'REQmca061', 'D01', 'No', 'not cleared all dues', '2024-09-23 10:13:48'),
-(46, 'REQmca061', 'D02', 'No', NULL, NULL),
-(47, 'REQmca061', 'D03', 'No', NULL, NULL),
-(48, 'REQmca061', 'D04', 'No', NULL, NULL);
+(45, 'REQmca061', 'D01', 'Yes', 'cleared all dues', '2024-10-16 02:19:37'),
+(46, 'REQmca061', 'D02', 'Yes', 'dues are approved', '2024-10-07 22:31:37'),
+(47, 'REQmca061', 'D03', 'Yes', 'all dues cleared', '2024-10-08 03:10:01'),
+(48, 'REQmca061', 'D04', 'Yes', 'all documents cleared', '2024-10-16 02:21:43'),
+(49, 'REQBA1124', 'D01', 'No', NULL, NULL),
+(50, 'REQBA1124', 'D02', 'No', NULL, NULL),
+(51, 'REQBA1124', 'D03', 'No', NULL, NULL),
+(52, 'REQBA1124', 'D04', 'No', NULL, NULL),
+(53, 'REQBBA1123', 'D01', 'No', NULL, NULL),
+(54, 'REQBBA1123', 'D02', 'No', NULL, NULL),
+(55, 'REQBBA1123', 'D03', 'No', NULL, NULL),
+(56, 'REQBBA1123', 'D04', 'No', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -134,17 +142,19 @@ CREATE TABLE `refundrequest` (
 --
 
 INSERT INTO `refundrequest` (`requestId`, `rollNo`, `requestDate`, `refundDate`, `refundDescription`, `refundStatus`, `verifyDetails`, `verifyReason`) VALUES
-('REQbba014', 'bba014', '2024-09-23 09:50:14', NULL, NULL, 'No', 'Verified', ''),
+('REQBA1124', 'BA1124', '2024-10-15 01:34:22', NULL, NULL, 'No', 'Not Verified', 'account number not matching'),
+('REQbba014', 'bba014', '2024-09-23 09:50:14', '2024-11-03 18:06:59', 'refund initiated ', 'Yes', 'Verified', ''),
+('REQBBA1123', 'BBA1123', '2024-10-16 01:56:34', NULL, NULL, 'No', 'selected', ''),
 ('REQbba74', 'bba74', '2024-08-22 12:37:10', '2024-08-24 21:09:10', 'refund to be processed in your bank account in 3,4 days.', 'Yes', 'Verified', ''),
-('REQbca03', 'bca03', '2024-09-22 17:39:59', NULL, NULL, 'No', 'Verified', ''),
+('REQbca03', 'bca03', '2024-09-22 17:39:59', NULL, NULL, 'No', '', ''),
 ('REQbca55', 'bca55', '2024-08-22 22:58:56', '2024-09-21 09:36:28', 'security amount initiated', 'Yes', 'Verified', ''),
 ('REQbcom07', 'bcom07', '2024-08-25 17:21:36', '2024-09-20 07:09:29', 'refund initiated ', 'Yes', 'Verified', ''),
-('REQmba04', 'mba04', '2024-08-27 10:08:23', '2024-09-22 14:05:32', 'refund is initiated', 'Yes', 'Verified', 'account number not matching'),
+('REQmba04', 'mba04', '2024-08-27 10:08:23', '2024-09-22 14:05:32', 'refund is initiated', 'Yes', 'Verified', ''),
 ('REQmba06', 'mba06', '2024-08-22 23:37:14', '2024-09-23 00:53:27', 'refund initiated', 'Yes', 'Verified', ''),
 ('REQmca01', 'mca01', '2024-08-22 12:36:19', '2024-08-23 20:46:37', 'Your refund is initiated and amount will be transferred in 4-5 days.', 'Yes', 'Verified', ''),
-('REQmca061', 'mca061', '2024-09-23 10:12:01', NULL, NULL, 'No', 'selected', ''),
+('REQmca061', 'mca061', '2024-09-23 10:12:01', NULL, NULL, 'No', 'Verified', ''),
 ('REQmca10', 'mca10', '2024-08-24 09:55:52', '2024-08-24 10:14:20', 'refund initiated and amount be transferred in 4,5 days.', 'Yes', 'Verified', ''),
-('REQmca20', 'mca20', '2024-09-19 01:03:57', NULL, NULL, 'No', 'selected', ''),
+('REQmca20', 'mca20', '2024-09-19 01:03:57', NULL, NULL, 'No', 'Verified', ''),
 ('REQmca71', 'mca71', '2024-08-23 23:42:40', NULL, NULL, 'No', 'Verified', '');
 
 -- --------------------------------------------------------
@@ -171,15 +181,19 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`batchSession`, `enrollmentNo`, `rollNo`, `Course`, `Name`, `fatherName`, `motherName`, `Contact`, `Dob`, `securityAmount`) VALUES
+('2020-2023', '114', 'BA1124', 'B A', 'Sakshi', 'T K', 'Deepa', '8796789000', '2002-04-04', 8000),
 ('2022-2025', 'ENR0105', 'bba014', 'BBA', 'Tiya Rai', 'Aman Rai', 'Radha', '4545454545', '2003-11-09', 8000),
+('2022-2025', '113', 'BBA1123', 'BBA', 'Pallavi', 'Pramod Rai', 'Sima Rai', '9801108340', '2004-05-23', 8000),
 ('2022-2025', 'ENR015', 'bba14', 'BBA', 'Tiya Rai', 'Deep Rai', 'Radha', '4545454545', '2003-11-09', 8000),
 ('2023-2026', 'ENR008', 'bba23', 'BBA', 'Kiran', 'Rohan Kumar', 'Sunita', '2324514554', '2001-07-01', 8000),
 ('2022-2025', 'ENR005', 'bba74', 'BBA', 'Disha', 'Manoj', 'Radha', '3344514554', '2003-10-05', 8000),
 ('2021-2024', 'ENR0104', 'bca003', 'BCA', 'Teena Sharma', 'Amit Sharma', 'Neeta Sharma', '9874514554', '2002-10-21', 8000),
 ('2021-2024', 'ENR014', 'bca03', 'BCA', 'Teena Sharma', 'Amit Sharma', 'Neeta Sharma', '9874514554', '2002-10-21', 8000),
+('2022-2025', '116', 'BCA1126', 'BCA', 'Chintu', 'Mintu', 'Chinti', '8676787888', '2002-08-30', 8000),
 ('2021-2024', 'ENR004', 'bca23', 'BCA', 'Amit Sharma', 'Arvind Sharma', 'Neeta Sharma', '3134514554', '2003-10-11', 8000),
 ('2019-2022', 'ENR010', 'bca55', 'BCA', 'Happy Singh', 'Vijay Singh', 'Suman Singh', '4455667788', '2003-09-03', 8000),
 ('2023-2026', 'ENR007', 'bcom07', 'BCOM', 'Aman Patel', 'Sunil Patel', 'Meena Patel', '1114514554', '2000-12-01', 5000),
+('2021-2024', '112', 'BCOM1234', 'B COM', 'Muskan', 'Pramod Rai', 'Sima Rai', '8102627458', '2003-12-17', 8000),
 ('2020-2022', 'ENR002', 'mba04', 'MBA', 'Bhanu', 'Anil', 'Aarti', '3141341341', '2002-11-01', 5000),
 ('2022-2024', 'ENR006', 'mba06', 'MBA', 'Trisha', 'Pradeep', 'Suman Singh', '3130004554', '2004-02-01', 5000),
 ('2020-2022', 'ENR012', 'mba104', 'MBA', 'Karan', 'Daddy', 'Mansi', '5641341341', '2002-01-01', 5000),
@@ -190,7 +204,9 @@ INSERT INTO `student` (`batchSession`, `enrollmentNo`, `rollNo`, `Course`, `Name
 ('2020-2022', 'ENR0101', 'mca061', 'MCA', 'Twinkle Singh', 'Y K Singh', 'Meeta Singh', '5432167890', '2001-12-01', 5000),
 ('2021-2023', 'ENR003', 'mca10', 'MCA', 'Chetan Kumar', 'Rakesh Kumar', 'Pooja', '2436245635', '2000-12-05', 5000),
 ('2021-2023', 'ENR013', 'mca20', 'MCA', 'Sanjay Kumar', 'Rakesh Kumar', 'Poonam', '2436675635', '2003-12-05', 5000),
-('2019-2021', 'ENR009', 'mca71', 'MCA', 'Tanvi', 'Sunil', 'Anita', '2233445566', '2004-07-02', 5000);
+('2019-2021', 'ENR009', 'mca71', 'MCA', 'Tanvi', 'Sunil', 'Anita', '2233445566', '2004-07-02', 5000),
+('2021-2023', '115', 'MCOM1125', 'M COM', 'Chinki', 'Minku', 'Meeta', '7865657889', '2000-10-13', 5000),
+('2024-2026', '111', 'MCOM12345', 'M COM', 'Varsha', 'Y K Singh', 'Madhuri Singh', '9989898990', '2002-11-04', 5000);
 
 -- --------------------------------------------------------
 
@@ -222,9 +238,11 @@ INSERT INTO `uploadcheque` (`uploadId`, `rollNo`, `filePath`, `accHolderName`, `
 (7, 'bcom07', '../admin/uploadFile/bcom07_mca 1.pdf', 'My Name', 'My Bank', 6534882345557, 'Bank00121'),
 (8, 'mba04', '../admin/uploadFile/mba04_5th Semester Result.pdf', 'my name', 'My Bank', 9999900234, 'Bank34355'),
 (9, 'mca20', '../admin/uploadFile/mca20_mca 1.pdf', 'sanjay kumar', 'SBI ', 409890344759, 'sbi4353'),
-(10, 'bca03', '../admin/uploadFile/bca03_DBMS_LAB.pdf', 'Teena Sharma', 'Axis', 66952454545, 'axis11111'),
+(10, 'bca03', '../admin/uploadFile/bca03_DBMS_LAB.pdf', 'Teena Sharma', 'Axis', 66952450009, 'axis00012'),
 (11, 'bba014', '../admin/uploadFile/bba014_mca 1.pdf', 'Tiya Rai', 'Axis', 9999900234, 'axis0012'),
-(12, 'mca061', '../admin/uploadFile/mca061_2 sem bca.pdf', 'Twinkle Singh', 'SBI ', 66952454545, 'sbi4352');
+(12, 'mca061', '../admin/uploadFile/mca061_2 sem bca.pdf', 'Twinkle Singh', 'SBI ', 66952454545, 'sbi4352'),
+(13, 'BA1124', '../admin/uploadFile/BA1124_NOTICE - HR CONCLAVE.pdf', 'sakshi', 'SBI', 9999900234, 'Bank00121'),
+(14, 'BBA1123', '../admin/uploadFile/BBA1123_CV for III Sem._Notice.pdf', 'pallavi', 'Axis', 1111882345557, 'axis0012');
 
 --
 -- Indexes for dumped tables
@@ -273,13 +291,13 @@ ALTER TABLE `uploadcheque`
 -- AUTO_INCREMENT for table `nodues`
 --
 ALTER TABLE `nodues`
-  MODIFY `noDueId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `noDueId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `uploadcheque`
 --
 ALTER TABLE `uploadcheque`
-  MODIFY `uploadId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `uploadId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables

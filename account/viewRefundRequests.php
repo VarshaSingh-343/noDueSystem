@@ -1,31 +1,24 @@
 <?php
 session_start();
 include '../connect.php';
-
 if (!isset($_SESSION['username'])) {
     header("Location: accountLogin.php");
     exit();
 }
-
 $username = $_SESSION['username'];
-
 // Query to get distinct courses and batch sessions for filter options
 $courseQuery = "SELECT DISTINCT Course FROM student";
 $courseResult = $conn->query($courseQuery);
 $selectedCourse = '';
-
 $batchQuery = "SELECT DISTINCT batchSession FROM student";
 $batchResult = $conn->query($batchQuery);
 $selectedBatch = '';
-
 $selectedRefundStatus = '';
 $selectedStartDate = '';
 $selectedEndDate = '';
 $selectedDepartmentDues = '';
-
 $conditions = [];
 $params = [];
-
 // Handle form submission
 if (isset($_POST['filter'])) {
     if (!empty($_POST['course'])) {
@@ -33,31 +26,26 @@ if (isset($_POST['filter'])) {
         $conditions[] = "s.Course = ?";
         $params[] = $selectedCourse;
     }
-
     if (!empty($_POST['batchSession'])) {
         $selectedBatch = $_POST['batchSession'];
         $conditions[] = "s.batchSession = ?";
         $params[] = $selectedBatch;
     }
-
     if (!empty($_POST['refundStatus'])) {
         $selectedRefundStatus = $_POST['refundStatus'];
         $conditions[] = "rr.refundStatus = ?";
         $params[] = $selectedRefundStatus;
     }
-
     if (!empty($_POST['startDate'])) {
         $selectedStartDate = $_POST['startDate'];
         $conditions[] = "rr.requestDate >= ?";
         $params[] = $selectedStartDate;
     }
-
     if (!empty($_POST['endDate'])) {
         $selectedEndDate = $_POST['endDate'];
         $conditions[] = "rr.requestDate <= ?";
         $params[] = $selectedEndDate;
     }
-
     if (!empty($_POST['departmentDues'])) {
         $selectedDepartmentDues = $_POST['departmentDues'];
         if ($selectedDepartmentDues == 'Cleared') {
@@ -68,14 +56,16 @@ if (isset($_POST['filter'])) {
             (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId)";
         }
     }
-
     if (!empty($_POST['verifyDetails'])) {
         $selectedVerifyDetails = $_POST['verifyDetails'];
-        $conditions[] = "rr.verifyDetails = ?";
-        $params[] = $selectedVerifyDetails;
+        if ($selectedVerifyDetails == 'Verified') {
+            $conditions[] = "rr.verifyDetails = ?";
+            $params[] = $selectedVerifyDetails;
+        } else if ($selectedVerifyDetails == 'Not Verified') {
+            $conditions[] = "rr.verifyDetails = 'Not Verified' OR rr.verifyDetails = 'selected' OR rr.verifyDetails = '' ";
+        }
     }
 }
-
 $query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.securityAmount, rr.requestDate, rr.refundDate, rr.refundDescription, rr.verifyDetails, rr.verifyReason,
           (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId AND n.noDueApproval = 'Yes') as countYes,
           (SELECT COUNT(*) FROM nodues n WHERE n.requestId = rr.requestId) as totalDepts,
@@ -83,32 +73,24 @@ $query = "SELECT s.rollNo, s.name, s.course, s.batchSession, rr.requestId, s.sec
           FROM refundrequest rr
           JOIN student s ON rr.rollNo = s.rollNo
           LEFT JOIN uploadcheque uc ON s.rollNo = uc.rollNo where rr.refundStatus != 'Yes'";
-
 if (!empty($conditions)) {
     $query .= " AND " . implode(" AND ", $conditions);
 }
-
 $query .= " ORDER BY s.rollNo";
-
 // Prepare the query
 $stmt = $conn->prepare($query);
-
 // Check if the prepare failed
 if (!$stmt) {
     die("Error preparing query: " . $conn->error);
 }
-
 if (!empty($params)) {
     $paramTypes = str_repeat("s", count($params));
     $stmt->bind_param($paramTypes, ...$params);
 }
-
 // Execute the query
 $stmt->execute();
 $result = $stmt->get_result();
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -116,7 +98,8 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Refund Requests</title>
-    <link rel="stylesheet" href="accountDashboard.css">
+    <link rel="stylesheet" href="../css/noduesproject.css">
+    <link rel="stylesheet" href="../css/accountDashboard.css">
 </head>
 
 <body>
@@ -131,15 +114,18 @@ $result = $stmt->get_result();
             </div>
             <?php include 'accountNav.php'; ?>
         </header>
-
         <?php if (isset($_SESSION['success_message'])): ?>
-            <div class="success_message"><?php echo $_SESSION['success_message'];
-                                            unset($_SESSION['success_message']); ?></div>
+            <script>
+                alert("<?php echo $_SESSION['success_message']; ?>");
+            </script>
+            <?php unset($_SESSION['success_message']); ?>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['error_message'])): ?>
-            <div class="error-message"><?php echo $_SESSION['error_message'];
-                                        unset($_SESSION['error_message']); ?></div>
+            <script>
+                alert("<?php echo $_SESSION['error_message']; ?>");
+            </script>
+            <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
 
         <div id="filterSection">
@@ -156,7 +142,6 @@ $result = $stmt->get_result();
                         <?php endwhile; ?>
                     </select>
                 </div>
-
                 <div class="filter-group">
                     <label for="batchSession">Filter by Batch:</label>
                     <select name="batchSession" id="batchSession">
@@ -169,7 +154,6 @@ $result = $stmt->get_result();
                         <?php endwhile; ?>
                     </select>
                 </div>
-
                 <div class="filter-group">
                     <label for="departmentDues">Filter by Department Dues:</label>
                     <select name="departmentDues" id="departmentDues">
@@ -178,17 +162,14 @@ $result = $stmt->get_result();
                         <option value="Not Cleared" <?php if ($selectedDepartmentDues == 'Not Cleared') echo 'selected'; ?>>Dues Not Cleared</option>
                     </select>
                 </div>
-
                 <div class="filter-group">
                     <label for="startDate">Start Date:</label>
                     <input type="date" name="startDate" id="startDate" value="<?php echo htmlspecialchars($selectedStartDate); ?>">
                 </div>
-
                 <div class="filter-group">
                     <label for="endDate">End Date:</label>
                     <input type="date" name="endDate" id="endDate" value="<?php echo htmlspecialchars($selectedEndDate); ?>">
                 </div>
-
                 <div class="filter-group">
                     <label for="verifyDetails">Filter by Verify Details:</label>
                     <select name="verifyDetails" id="verifyDetails">
@@ -197,11 +178,9 @@ $result = $stmt->get_result();
                         <option value="Not Verified">Not Verified</option>
                     </select>
                 </div>
-
                 <button type="submit" id="filter" name="filter">Filter</button>
             </form>
         </div>
-
         <h3>Details of No Dues requested by Students</h3>
         <div class="table-container">
             <?php if ($result->num_rows > 0): ?>
@@ -216,8 +195,6 @@ $result = $stmt->get_result();
                             <th>Account Details</th>
                             <th>Cheque</th>
                             <th>No Dues Status</th>
-                            <!-- <th>Refund Date</th>
-                            <th>Refund Description</th> -->
                             <th>Verify Details</th>
                             <th>Refund Initiation</th>
                         </tr>
@@ -237,12 +214,14 @@ $result = $stmt->get_result();
                                     <strong>IFSC Code:</strong> <?php echo htmlspecialchars($row['ifscCode']); ?><br>
                                 </td>
                                 <td><a href="<?php echo htmlspecialchars($row['filePath']); ?>" target="_blank">View Uploaded Cheque</a></td>
-                                <td>
-                                    <?php echo $row['countYes'] == $row['totalDepts'] ? 'Cleared' : 'Not Cleared'; ?>
-                                </td>
-                                <!-- <td><?php echo htmlspecialchars($row['refundDate']); ?></td>
-                                <td><?php echo htmlspecialchars($row['refundDescription']); ?></td> -->
 
+                                <td>
+                                    <a href="#" onclick="openNoDuesModal('<?php echo $row['requestId']; ?>')">
+                                        <?php echo $row['countYes'] == $row['totalDepts'] ? 'Cleared' : 'Not Cleared'; ?>
+                                    </a>
+                                </td>
+
+                                </td>
                                 <td>
                                     <?php if ($row['verifyDetails'] == 'Verified'): ?>
                                         <span>Verified</span>
@@ -265,7 +244,6 @@ $result = $stmt->get_result();
                                         </form>
                                     <?php endif; ?>
                                 </td>
-
                                 <td>
                                     <?php if ($row['verifyDetails'] === 'Verified'): ?>
                                         <?php if ($row['countYes'] == $row['totalDepts']): ?>
@@ -280,19 +258,16 @@ $result = $stmt->get_result();
                                             <button id="notVerified"><?php echo $row['verifyDetails'] === 'Not Verified' || $row['verifyDetails'] === '' ? 'Account Not Verified' : ''; ?></button>
                                         <?php endif; ?>
                                     <?php endif; ?>
-                                </td>
-
+                                </td> 
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
-
                 </table>
             <?php else: ?>
                 <p id="noRecord">No records available for the selected filters.</p>
             <?php endif; ?>
         </div>
     </div>
-
 
     <div id="refundModal" style="display: none;">
         <div class="modal-content">
@@ -312,6 +287,19 @@ $result = $stmt->get_result();
             </form>
         </div>
     </div>
+
+
+    <!-- No Dues Modal -->
+    <div id="noDuesModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeNoDuesModal()">&times;</span>
+            <h2>No Dues Details</h2>
+            <div id="noDuesDetails">
+                <!-- No Dues Table will be populated here -->
+            </div>
+        </div>
+    </div>
+
 
     <script>
         function openModal(requestId, filePath) {
@@ -339,8 +327,28 @@ $result = $stmt->get_result();
             var form = button.form;
             form.submit();
         }
-    </script>
 
+
+        function openNoDuesModal(requestId) {
+            // Send an AJAX request to fetch the department-wise dues for the given requestId
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "fetchNoDuesDetails.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Parse the response and populate the modal content
+                    document.getElementById('noDuesDetails').innerHTML = xhr.responseText;
+                    // Show the modal
+                    document.getElementById('noDuesModal').style.display = 'block';
+                }
+            };
+            xhr.send("requestId=" + requestId);
+        } 
+
+        function closeNoDuesModal() {
+            document.getElementById('noDuesModal').style.display = 'none';
+        }
+    </script>
 
 </body>
 

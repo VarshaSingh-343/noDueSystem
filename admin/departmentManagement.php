@@ -1,36 +1,41 @@
 <?php
 session_start();
-include '../connect.php'; 
+include '../connect.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: adminLogin.php");
     exit();
 }
 
-// Handle form submissions for adding a new department
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add'])) {
-        // Adding a new department
         $deptId = $_POST['deptId'];
         $deptName = $_POST['deptName'];
         $deptPassword = $_POST['deptPassword'];
 
-        // Check if deptId already exists
-        $checkSql = "SELECT * FROM department WHERE deptId = ?";
+        // Hash the department password before storing
+        $hashedPassword = password_hash($deptPassword, PASSWORD_DEFAULT);
+
+        // Check if deptId or deptName already exists
+        $checkSql = "SELECT * FROM department WHERE deptId = ? OR deptName = ?";
         $stmt = $conn->prepare($checkSql);
-        $stmt->bind_param("s", $deptId);
+        $stmt->bind_param("ss", $deptId, $deptName);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // If department already exists
-            $_SESSION['message'] = "Department ID already exists!";
+            // Fetch existing row to check which field caused the conflict
+            $row = $result->fetch_assoc();
+            if ($row['deptId'] == $deptId) {
+                $_SESSION['message'] = "Department ID already exists!";
+            } elseif ($row['deptName'] == $deptName) {
+                $_SESSION['message'] = "Department Name already exists!";
+            }
             $_SESSION['message_type'] = "error";
         } else {
-            // If department doesn't exist, insert the new department
             $sql = "INSERT INTO department (deptId, deptName, deptPassword) VALUES (?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $deptId, $deptName, $deptPassword);
+            $stmt->bind_param("sss", $deptId, $deptName, $hashedPassword);
             if ($stmt->execute()) {
                 $_SESSION['message'] = "New department added successfully!";
                 $_SESSION['message_type'] = "success";
@@ -39,30 +44,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['message_type'] = "error";
             }
         }
+
         header("Location: departmentManagement.php");
         exit();
-    } elseif (isset($_POST['edit'])) {
-        // Editing an existing department
+    }
+    // For editing an existing department
+    elseif (isset($_POST['edit'])) {
         $deptId = $_POST['deptId'];
         $deptName = $_POST['deptName'];
         $deptPassword = $_POST['deptPassword'];
+        $currentPasswordHash = $_POST['currentPasswordHash']; // Get current password hash from the hidden field
 
-        $sql = "UPDATE department SET deptName = ?, deptPassword = ? WHERE deptId = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $deptName, $deptPassword, $deptId);
-        $stmt->execute();
-        $_SESSION['message'] = "Department updated successfully!";
-        $_SESSION['message_type'] = "success";
+        if (empty($deptPassword)) {
+            // If no new password is provided, just update the department name
+            $sql = "UPDATE department SET deptName = ? WHERE deptId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ss", $deptName, $deptId);
+        } else {
+            // If a new password is provided, hash it and update the password
+            $hashedPassword = password_hash($deptPassword, PASSWORD_DEFAULT);
+            $sql = "UPDATE department SET deptName = ?, deptPassword = ? WHERE deptId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sss", $deptName, $hashedPassword, $deptId);
+        }
+
+        // Execute the query and handle the response
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Department updated successfully!";
+            $_SESSION['message_type'] = "success";
+        } else {
+            $_SESSION['message'] = "Error updating department!";
+            $_SESSION['message_type'] = "error";
+        }
+
         header("Location: departmentManagement.php");
         exit();
-    } elseif (isset($_POST['delete'])) {
-        // Deleting a department
+    }
+
+    // For deleting a department
+    elseif (isset($_POST['delete'])) {
         $deptId = $_POST['deptId'];
 
         $sql = "DELETE FROM department WHERE deptId = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $deptId);
         $stmt->execute();
+
         $_SESSION['message'] = "Department deleted successfully!";
         $_SESSION['message_type'] = "success";
         header("Location: departmentManagement.php");
@@ -70,26 +97,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Fetch departments to display
 $sql = "SELECT deptId, deptName, deptPassword FROM department";
 $result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Department Management</title>
-    <link rel="stylesheet" href="adminDashboard.css">
+    <link rel="stylesheet" href="../css/adminDashboard.css">
+    <link rel="stylesheet" href="../css/noduesproject.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
-        .container{
+        .container {
             justify-content: center;
             align-items: center;
         }
-        table{
-            width: 70%;
+
+        table {
+            width: 90%;
         }
+
         .message {
             width: 40%;
             text-align: center;
@@ -98,13 +130,17 @@ $result = $conn->query($sql);
             border-radius: 5px;
             border: 2px solid #f03e41;
         }
+
         .success {
             color: #08a820;
         }
+
         .error {
             color: #721c24;
         }
-        form, #deptForm{
+
+        form,
+        #deptForm {
             display: flex;
             flex-direction: column;
             gap: 5px;
@@ -113,10 +149,12 @@ $result = $conn->query($sql);
             align-items: center;
             flex-wrap: wrap;
         }
-        .form-item{
+
+        .form-item {
             display: flex;
             flex-direction: row;
         }
+
         input[type="text"] {
             padding: 7px;
             text-align: center;
@@ -132,59 +170,81 @@ $result = $conn->query($sql);
             outline: none;
         }
 
-        input[type="submit"] {
+        .submit1,
+        #submit {
+            display: inline-flex;
+            align-items: center;
             padding: 7px 12px;
-            text-align: center;
             background-color: #40b858;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
+            font-size: 16px;
+            margin-right: 10px;
         }
 
-        #submit1:hover, #submit:hover {
+        .submit1 i {
+            margin-right: 5px;
+        }
+
+        .submit1:hover,
+        #submit:hover {
             background-color: green;
             transform: scale(1.1);
         }
+
         label {
             font-size: 16px;
             margin: 10px 0 5px;
             color: #333;
             width: 150px;
         }
-        #deptForm{
+
+        .deptForm{
+            margin-top: 35px;
+        }
+
+        #deptForm {
             padding: 0px 20px 20px 20px;
             margin: 0 auto;
             justify-content: center;
             align-items: center;
             text-align: center;
-            width: 50%;
+            width: 60%;
             text-align: center;
             border-radius: 8px;
             box-shadow: 0 4px 8px #cccccc;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 15px;
         }
-        .form-item1{
+
+        .form-item1 {
             display: flex;
             flex-direction: row;
             width: 80%;
         }
-        .form-item1 input{
+
+        .form-item1 input {
             text-align: left;
         }
-        #submit{
+
+        #submit {
             margin: 0 auto;
             margin-top: 15px;
             padding: 12px;
         }
 
+        #pass {
+            width: 200px;
+        }
     </style>
     <script>
         function confirmEdit() {
-            return confirm("Are you sure you want to edit this department?");
+            return confirm("Are you sure you want to update this department?");
         }
 
         function confirmAdd() {
@@ -192,6 +252,7 @@ $result = $conn->query($sql);
         }
     </script>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -219,25 +280,29 @@ $result = $conn->query($sql);
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
                         <form action="departmentManagement.php" method="POST">
-                            <td><input type="text" name="deptId" value="<?php echo $row['deptId']; ?>" readonly></td>
-                            <td><input type="text" name="deptName" value="<?php echo $row['deptName']; ?>" required></td>
-                            <td><input type="text" name="deptPassword" value="<?php echo $row['deptPassword']; ?>" required></td>
+                            <td><input type="text" name="deptId" value="<?php echo htmlspecialchars($row['deptId']); ?>" readonly></td>
+                            <td><input type="text" name="deptName" value="<?php echo htmlspecialchars($row['deptName']); ?>" required></td>
                             <td>
-                                <input id="submit1" type="submit" name="edit" value="Edit" onclick="return confirmEdit();">
-                                <input id="submit1" type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete this department?');">
+                                <textarea id="pass" name="deptPassword" placeholder="Enter new password (leave blank to keep current)"></textarea>
+                                <span>********</span>
+                            </td>
+                            <td>
+                                <input type="hidden" name="currentPasswordHash" value="<?php echo htmlspecialchars($row['deptPassword']); ?>">
+
+                                <button class="submit1" name="edit" onclick="return confirmEdit();">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i> Update
+                                </button>
+
+                                <button class="submit1" name="delete" onclick="return confirm('Are you sure you want to delete this department?');">
+                                    <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                                </button>
                             </td>
                         </form>
                     </tr>
                 <?php endwhile; ?>
             </tbody>
-        </table>
 
-        <?php if (isset($_SESSION['message'])): ?>
-            <div class="message <?php echo $_SESSION['message_type']; ?>">
-                <?php echo $_SESSION['message']; ?>
-            </div>
-            <?php unset($_SESSION['message']); unset($_SESSION['message_type']); ?>
-        <?php endif; ?>
+        </table>
 
         <div class="deptForm">
             <form id="deptForm" action="departmentManagement.php" method="POST" onsubmit="return confirmAdd();">
@@ -259,7 +324,17 @@ $result = $conn->query($sql);
                 </div>
             </form>
         </div>
-        
+
     </div>
+
+    <script>
+        <?php if (isset($_SESSION['message'])): ?>
+            alert('<?php echo $_SESSION['message']; ?>');
+            <?php unset($_SESSION['message']);
+            unset($_SESSION['message_type']); ?>
+        <?php endif; ?>
+    </script>
+
 </body>
+
 </html>

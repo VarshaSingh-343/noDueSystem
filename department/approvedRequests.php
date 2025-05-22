@@ -27,7 +27,6 @@ if ($result->num_rows > 0) {
 
 $departmentName = isset($deptNames[$deptId]) ? $deptNames[$deptId] : 'Unknown Department';
 
-// Fetch courses
 $courseQuery = "SELECT DISTINCT Course FROM student";
 $courseResult = $conn->query($courseQuery);
 
@@ -35,7 +34,6 @@ if (!$courseResult) {
     die("Error fetching courses: " . $conn->error);
 }
 
-// Fetch batches
 $batchQuery = "SELECT DISTINCT batchSession FROM student";
 $batchResult = $conn->query($batchQuery);
 
@@ -52,7 +50,6 @@ $selectedDuesCleared = '';
 $conditions = [];
 $params = [];
 
-// Base query
 $query = "SELECT s.rollNo, s.name, s.Course, nd.requestId, rr.requestDate, nd.noDueApproval, nd.noDueComment, nd.approvalDate
           FROM nodues nd
           JOIN refundrequest rr ON nd.requestId = rr.requestId
@@ -124,7 +121,7 @@ if (!$result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($departmentName); ?> Dashboard</title>
-    <link rel="stylesheet" href="departmentDashboard.css">
+    <link rel="stylesheet" href="../css/departmentDashboard.css">
     <style>
         .success {
             color: #08a820;
@@ -151,14 +148,19 @@ if (!$result) {
 
         <main>
             <?php if (isset($_SESSION['success_message'])): ?>
-                <div class="message success"><?php echo $_SESSION['success_message'];
-                                                unset($_SESSION['success_message']); ?></div>
+                <script>
+                    alert("<?php echo $_SESSION['success_message']; ?>");
+                </script>
+                <?php unset($_SESSION['success_message']); ?>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['error_message'])): ?>
-                <div class="message error"><?php echo $_SESSION['error_message'];
-                                            unset($_SESSION['error_message']); ?></div>
+                <script>
+                    alert("<?php echo $_SESSION['error_message']; ?>");
+                </script>
+                <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
+
 
             <div id="filterSection">
                 <form method="POST" action="">
@@ -250,7 +252,11 @@ if (!$result) {
                                     </td>
 
                                     <td>
-                                        <textarea name="noDueComment[<?php echo htmlspecialchars($row['requestId']); ?>]" rows="2" <?php if ($row['noDueApproval'] === 'Yes') echo 'readonly'; ?>><?php echo htmlspecialchars($row['noDueComment']); ?></textarea>
+                                        <?php if (!empty($row['noDueComment'])): ?>
+                                            <span><?php echo htmlspecialchars($row['noDueComment']); ?></span>
+                                        <?php else: ?>
+                                            <span>No comments yet</span>
+                                        <?php endif; ?>
                                     </td>
 
                                     <td><?php echo htmlspecialchars($row['approvalDate']); ?></td>
@@ -260,7 +266,7 @@ if (!$result) {
                                             <span>Dues Cleared</span>
                                         <?php else: ?>
                                             <!-- <button type="button" class="approve-btn" onclick="submitRow('<?php echo htmlspecialchars($row['requestId']); ?>')">Submit</button> -->
-                                             <span>Dues Not Cleared</span>
+                                            <span>Dues Not Cleared</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

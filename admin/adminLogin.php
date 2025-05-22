@@ -8,7 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'] ?? '';
 
     if ($username === $validUsername && $password === $validPassword) {
+
+        session_regenerate_id(true); 
         $_SESSION['username'] = $username;
+        
         header('Location: adminDashboard.php');
         exit();
     } else {
@@ -24,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-    <link rel="stylesheet" href="../login.css">
+    <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
     <div class="container">

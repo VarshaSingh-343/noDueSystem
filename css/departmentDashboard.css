@@ -170,7 +170,9 @@ h3 {
 }
 
 .filter-group{
-  margin: 8px ;
+  display: flex; 
+  align-items: center; 
+  margin: 8px;
 }
 table {
   width: 100%;
