@@ -32,6 +32,7 @@ $noCount = $resultNo->fetch_assoc()['noCount'];
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../css/adminDashboard.css">
     <link rel="stylesheet" href="../css/noduesproject.css">
+    
     <script>
         function navigateToPage(page) {
             window.location.href = page;

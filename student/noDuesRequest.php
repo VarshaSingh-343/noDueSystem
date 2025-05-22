@@ -183,12 +183,8 @@ $stmt->close();
                         <a href="<?php echo htmlspecialchars($uploadedCheque); ?>" target="_blank">View Uploaded Cheque</a>
                     </div>
                 </div>
-
-
                 <div class="message">Your Refund has already been processed. You cannot change the uploaded details.</div>
             <?php endif; ?>
-
-
         </main>
     </div>
 </body>
